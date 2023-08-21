@@ -1,5 +1,5 @@
 from scrapy.crawler import CrawlerProcess
-from scraper.src.spiders.quotes_spider import QuotesSpider
+from spiders.career_spider import CareerSpider
 
 if __name__ == '__main__':
     process = CrawlerProcess(settings={
@@ -7,5 +7,5 @@ if __name__ == '__main__':
         'FEED_URI': 'output.json'
     })
 
-    process.crawl(QuotesSpider)
+    process.crawl(CareerSpider)
     process.start()
