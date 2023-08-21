@@ -3,6 +3,7 @@ load("@pip_deps//:requirements.bzl", "requirement")
 py_binary(
     name = "scraper",
     srcs = glob(["src/**/*.py"]),
+    imports = ["src"],
     main = "src/main.py",
     deps = [
         requirement("Scrapy"),
