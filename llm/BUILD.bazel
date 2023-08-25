@@ -1,0 +1,15 @@
+load("@rules_foreign_cc//foreign_cc:defs.bzl", "make")
+
+make(
+    name = "llm",
+    lib_source = "@llama_cpp//:sources",
+    out_binaries = [
+        "main",
+        "quantize",
+    ],
+    postfix_script = "cp main quantize $INSTALLDIR/bin/",
+    targets = [
+        "main",
+        "quantize",
+    ],
+)
