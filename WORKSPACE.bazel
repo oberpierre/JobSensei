@@ -34,7 +34,18 @@ http_archive(
     sha256 = "7a1738d411cb53f450cedf29054d0d8168b6b0aa30127f63e8a5079387771dab",
     strip_prefix = "llama.cpp-b1078",
     urls = ["https://github.com/ggerganov/llama.cpp/archive/refs/tags/b1078.tar.gz"],
+    visibility = ["//visibility:public"],
 )
+
+pip_parse(
+    name = "llm_deps",
+    download_only = True,  # Making sure we use pip download instead of pip wheel
+    requirements_lock = "@llama_cpp//:requirements.txt",
+)
+
+load("@llm_deps//:requirements.bzl", llm_install = "install_deps")
+
+llm_install()
 
 http_archive(
     name = "rules_foreign_cc",

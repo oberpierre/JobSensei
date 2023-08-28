@@ -1,7 +1,8 @@
 load("@rules_foreign_cc//foreign_cc:defs.bzl", "make")
+load("@llm_deps//:requirements.bzl", "all_requirements")
 
 make(
-    name = "llm",
+    name = "llama_cpp_bins",
     lib_source = "@llama_cpp//:sources",
     out_binaries = [
         "main",
@@ -11,5 +12,41 @@ make(
     targets = [
         "main",
         "quantize",
+    ],
+)
+
+genrule(
+    name = "llm",
+    srcs = ["//llm:llama_cpp_bins"],
+    outs = ["main"],
+    cmd = "cp `ls $(locations //llm:llama_cpp_bins) | grep main$$` $(@)",
+    executable = True,
+)
+
+genrule(
+    name = "quantize",
+    srcs = ["//llm:llama_cpp_bins"],
+    outs = ["quantizebin"],
+    cmd = "cp `ls $(locations //llm:llama_cpp_bins) | grep quantize$$` $(@)",
+    executable = True,
+)
+
+py_binary(
+    name = "convert",
+    srcs = ["@llama_cpp//:sources"],
+    deps = all_requirements,
+)
+
+genrule(
+    name = "conversion",
+    srcs = glob(["model/**"]),
+    outs = ["model/ggml-model-q4_0.gguf"],
+    cmd = " && ".join([
+        "$(location //llm:convert) llm/model/llama2",
+        "$(location //llm:quantize) llm/model/llama2/ggml-model-f16.gguf $(@) q4_0",
+    ]),
+    tools = [
+        "//llm:convert",
+        "//llm:quantize",
     ],
 )
