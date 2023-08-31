@@ -24,8 +24,10 @@ JobSensei aims to land you your next job by:
 
 3. **Build using Bazel**:
 
+   Follow the [model preparation instructions](./llm/README.md#model-preparation) in the llm package. Once the model is provided you can build the whole project by running the following command in the root of the project:
+
    ```
-   bazelisk build //...
+   bazel build //...
    ```
 
 4. **Testing**:
@@ -33,16 +35,16 @@ JobSensei aims to land you your next job by:
    Run all tests using:
 
    ```
-   bazelisk test //...
+   bazel test //...
    ```
 
    or for a single target:
 
    ```
-   bazelisk test <target>
+   bazel test <target>
    ```
 
-That's it! You can deploy the binaries now or run JobSensei on your local machine using `bazelisk run <target>`.
+That's it! You can deploy the binaries now or run JobSensei on your local machine using `bazel run <target>`.
 
 ## Contribute
 

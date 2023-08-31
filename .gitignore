@@ -80,3 +80,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+
+# Prevent the LLM model from being checked into version control
+llm/model/llama2/**
+!llm/model/llama2/.gitkeep
