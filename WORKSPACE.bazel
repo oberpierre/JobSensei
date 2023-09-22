@@ -16,10 +16,12 @@ python_register_toolchains(
     python_version = "3.11",
 )
 
+load("@python3_11//:defs.bzl", "interpreter")
 load("@rules_python//python:pip.bzl", "pip_parse")
 
 pip_parse(
     name = "pip_deps",
+    python_interpreter_target = interpreter,
     download_only = True,  # Making sure we use pip download instead of pip wheel
     requirements_lock = "//third-party:requirements_lock.txt",
 )
@@ -39,6 +41,7 @@ http_archive(
 
 pip_parse(
     name = "llm_deps",
+    python_interpreter_target = interpreter,
     download_only = True,  # Making sure we use pip download instead of pip wheel
     requirements_lock = "@llama_cpp//:requirements.txt",
 )
