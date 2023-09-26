@@ -66,6 +66,14 @@ ITEM_PIPELINES = {
    "pipelines.KafkaPipeline": 300,
 }
 
+# Define Kafka settings
+KAFKA_SETTINGS = {
+    "BOOTSTRAP_SERVERS": "kafka:9092",
+    "START_TOPIC": "sourcing-start-v1",
+    "END_TOPIC": "sourcing-end-v1",
+    "SOURCING_TOPIC": "sourcing-v1"
+}
+
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
