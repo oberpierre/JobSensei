@@ -38,5 +38,6 @@ class CareerSpider(scrapy.Spider):
         else:
             for listing in response.css("div[jsname='tIk9qd']"):
                 yield {
-                    "id": listing.attrib['data-id']
+                    "url": response.url,
+                    "content": listing.get(),
                 }
