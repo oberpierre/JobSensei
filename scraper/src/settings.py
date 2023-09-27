@@ -9,8 +9,8 @@
 
 BOT_NAME = "scraper"
 
-SPIDER_MODULES = ["scraper.spiders"]
-NEWSPIDER_MODULE = "scraper.spiders"
+SPIDER_MODULES = ["spiders"]
+NEWSPIDER_MODULE = "spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -62,9 +62,17 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "scraper.pipelines.ScraperPipeline": 300,
-#}
+ITEM_PIPELINES = {
+   "pipelines.KafkaPipeline": 300,
+}
+
+# Define Kafka settings
+KAFKA_SETTINGS = {
+    "BOOTSTRAP_SERVERS": "kafka:9092",
+    "START_TOPIC": "sourcing-start-v1",
+    "END_TOPIC": "sourcing-end-v1",
+    "SOURCING_TOPIC": "sourcing-v1"
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
