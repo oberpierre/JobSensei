@@ -33,9 +33,9 @@ install_deps()
 http_archive(
     name = "llama_cpp",
     build_file = "//llm:llama_cpp.bzl",
-    sha256 = "2a560c621d3280d6ad424dc149c5bcab31329c9ef65259a8a1bd940add8cd704",
-    strip_prefix = "llama.cpp-b1266",
-    urls = ["https://github.com/ggerganov/llama.cpp/archive/refs/tags/b1266.tar.gz"],
+    sha256 = "52fe092cc694ee4965c37915b5054a5952c9b08a36db5266246340cd693f9c91",
+    strip_prefix = "llama.cpp-b1305",
+    urls = ["https://github.com/ggerganov/llama.cpp/archive/refs/tags/b1305.tar.gz"],
     visibility = ["//visibility:public"],
 )
 
