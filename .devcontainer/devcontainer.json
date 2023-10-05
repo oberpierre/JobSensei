@@ -11,13 +11,15 @@
 		"vscode": {
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
-				"devondcarew.bazel-code"
+				"devondcarew.bazel-code",
+				"mongodb.mongodb-vscode"
 			]
 		}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": [27017],
+
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",
 	// Uncomment when using a ptrace-based debugger like C++, Go, and Rust
