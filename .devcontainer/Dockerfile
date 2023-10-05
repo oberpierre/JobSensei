@@ -36,6 +36,21 @@ RUN . /etc/os-release \
     && apt-get install -y mongodb-mongosh \
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then apt-get install -y mongodb-database-tools; fi
 
+# Install CUDA
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb \
+    && dpkg -i cuda-keyring_1.1-1_all.deb \
+    && apt-get update \
+    && apt-get -y install cuda
+
+ENV PATH="$PATH:/usr/local/cuda/bin"
+ENV CUDA_PATH="/usr/local/cuda"
+ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64"
+
+# These files need to be removed for since they will be created with gpu passthrough, which fails otherwise
+RUN rm -rf  /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1 \
+            /usr/lib/x86_64-linux-gnu/libcuda.so.1 \
+            /usr/lib/x86_64-linux-gnu/libcudadebugger.so.1
+
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>

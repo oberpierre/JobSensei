@@ -8,6 +8,13 @@ services:
       args:
         BAZELISK_VERSION: v1.18.0
         BAZELISK_DOWNLOAD_SHA: ce52caa51ef9e509fb6b7e5ad892e5cf10feb0794b0aed4d2f36adb00a1a2779
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     depends_on:
       - kafka
     volumes:
