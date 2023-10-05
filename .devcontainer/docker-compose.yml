@@ -19,6 +19,7 @@ services:
       - kafka
     volumes:
       - ../..:/workspaces:cached
+      - ../../../models/sheep-duck-llama-2:/workspaces/JobSensei/llm/model/llama2:ro
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity

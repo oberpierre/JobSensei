@@ -8,6 +8,14 @@ make(
         "main",
         "quantize",
     ],
+    args = [
+        "-E CXXFLAGS:=-std=c++11",
+    ],
+    env = {
+        "CC": "/usr/bin/gcc",
+        "CXX": "/usr/bin/g++",
+        "LLAMA_CUBLAS": "1",
+    },
     postfix_script = "cp main quantize $INSTALLDIR/bin/",
     targets = [
         "main",
@@ -16,9 +24,9 @@ make(
 )
 
 genrule(
-    name = "llm",
+    name = "main",
     srcs = ["//llm:llama_cpp_bins"],
-    outs = ["main"],
+    outs = ["mainbin"],
     cmd = "cp `ls $(locations //llm:llama_cpp_bins) | grep main$$` $(@)",
     executable = True,
 )
@@ -40,10 +48,10 @@ py_binary(
 genrule(
     name = "conversion",
     srcs = glob(["model/**"]),
-    outs = ["model/ggml-model-q4_0.gguf"],
+    outs = ["model/ggml-model-q5_K_M.gguf"],
     cmd = " && ".join([
         "$(location //llm:convert) llm/model/llama2",
-        "$(location //llm:quantize) llm/model/llama2/ggml-model-f16.gguf $(@) q4_0",
+        "$(location //llm:quantize) llm/model/llama2/ggml-model-f16.gguf $(@) q5_K_M",
     ]),
     tools = [
         "//llm:convert",
