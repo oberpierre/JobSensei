@@ -8,10 +8,18 @@ services:
       args:
         BAZELISK_VERSION: v1.18.0
         BAZELISK_DOWNLOAD_SHA: ce52caa51ef9e509fb6b7e5ad892e5cf10feb0794b0aed4d2f36adb00a1a2779
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     depends_on:
       - kafka
     volumes:
       - ../..:/workspaces:cached
+      - ../../../models/sheep-duck-llama-2:/workspaces/JobSensei/llm/model/llama2:ro
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
