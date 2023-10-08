@@ -58,3 +58,12 @@ genrule(
         "//llm:quantize",
     ],
 )
+
+py_binary(
+    name = "llm",
+    srcs = ["llm.py"],
+    data = [
+        ":mainbin",
+        ":model/ggml-model-q5_K_M.gguf"
+    ],
+)
