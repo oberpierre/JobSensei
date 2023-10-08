@@ -1,2 +1,2 @@
 Scrapy
-kafka-python
+confluent-kafka
