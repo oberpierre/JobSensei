@@ -12,7 +12,7 @@ class KafkaPipeline:
         self.sourcing_topic = sourcing_topic
         conf = {
             'bootstrap.servers': kafka_bootstrap_servers,
-            'client.id': 'jobsense-scraper',
+            'client.id': 'jobsensei-scraper',
         }
         self.producer = Producer(**conf)
 

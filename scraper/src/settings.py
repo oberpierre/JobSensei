@@ -69,9 +69,9 @@ ITEM_PIPELINES = {
 # Define Kafka settings
 KAFKA_SETTINGS = {
     "BOOTSTRAP_SERVERS": "kafka:9092",
-    "START_TOPIC": "sourcing-start-v1",
-    "END_TOPIC": "sourcing-end-v1",
-    "SOURCING_TOPIC": "sourcing-v1"
+    "START_TOPIC": "jobsensei-sourcing-start-v1",
+    "END_TOPIC": "jobsensei-sourcing-end-v1",
+    "SOURCING_TOPIC": "jobsensei-sourcing-v1"
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
