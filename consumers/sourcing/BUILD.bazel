@@ -2,6 +2,7 @@ load("@pip_deps//:requirements.bzl", "requirement")
 
 py_binary(
     name = "sourcing",
-    srcs = ["sourcing.py"],
+    srcs = glob(["*.py"]),
+    imports = ["."],
     deps = [requirement("confluent-kafka"), requirement("pymongo")]
 )
