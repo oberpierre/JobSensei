@@ -30,3 +30,12 @@ CREATE TABLE IF NOT EXISTS listings (
         cursor.execute('''
 INSERT INTO listings (url)
 VALUES (:url)''', record)
+
+    def is_new(self, record):
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute('SELECT 1 FROM listings WHERE url = (:url)', record)
+            result = cursor.fetchone()
+            return result is None
+        finally:
+            cursor.close()
