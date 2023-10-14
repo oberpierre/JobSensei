@@ -3,6 +3,7 @@ import os
 from confluent_kafka import Consumer, KafkaError, Producer
 from data_lake_handler import DataLakeHandler
 from delta_processor import DeltaProcessor
+from topic import Topic
 
 class Sourcing:
     def __init__(self, kafka_conf, mongo_conf):
@@ -19,7 +20,7 @@ class Sourcing:
         return [{'url': x['url'], 'reference': x['runId']} for x in data]
 
     def start_processing(self, ):
-        self.consumer.subscribe(['jobsensei-sourcing-v1', 'jobsensei-sourcing-new-v1'])
+        self.consumer.subscribe([Topic.SOURCING.value, Topic.END.value, Topic.NEW.value])
 
         try:
             while True:
@@ -47,10 +48,10 @@ class Sourcing:
         value = msg.value()
         record = json.loads(value.decode())
 
-        if topic == 'jobsensei-sourcing-v1':
+        if topic == Topic.SOURCING.value:
             if self.delta_processor.is_new(record):
-                self._send_message('jobsensei-sourcing-new-v1', record)
-        elif topic == 'jobsensei-sourcing-new-v1':
+                self._send_message(Topic.NEW.value, record)
+        elif topic == Topic.NEW.value:
             self.data_lake.create_new_listing(record)
 
     def _send_message(self, topic, msg):
