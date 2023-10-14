@@ -1,12 +1,13 @@
 import json
 import os
-from confluent_kafka import Consumer, KafkaError
+from confluent_kafka import Consumer, KafkaError, Producer
 from data_lake_handler import DataLakeHandler
 from delta_processor import DeltaProcessor
 
 class Sourcing:
     def __init__(self, kafka_conf, mongo_conf):
         self.consumer = Consumer(kafka_conf)
+        self.producer = Producer(kafka_conf)
         self.data_lake = DataLakeHandler(**mongo_conf)
         self.delta_processor = DeltaProcessor(self._map_to_delta(self.data_lake.get_all_active_listings()))
 
@@ -18,7 +19,7 @@ class Sourcing:
         return [{'url': x['url'], 'reference': x['runId']} for x in data]
 
     def start_processing(self, ):
-        self.consumer.subscribe(["jobsensei-sourcing-v1"])
+        self.consumer.subscribe(['jobsensei-sourcing-v1', 'jobsensei-sourcing-new-v1'])
 
         try:
             while True:
@@ -34,16 +35,29 @@ class Sourcing:
                 else:
                     self._process_message(msg=msg)
         except KeyboardInterrupt:
+            print("Processing interrupted by user")
+            pass
+        except Exception as e:
+            print(f"An unexpected error occurred: {str(e)}")
+        finally:
             pass
 
     def _process_message(self, msg):
         topic = msg.topic()
         value = msg.value()
+        record = json.loads(value.decode())
 
         if topic == 'jobsensei-sourcing-v1':
-            record = json.loads(value.decode())
             if self.delta_processor.is_new(record):
-                self.data_lake.create_new_listing(record)
+                self._send_message('jobsensei-sourcing-new-v1', record)
+        elif topic == 'jobsensei-sourcing-new-v1':
+            self.data_lake.create_new_listing(record)
+
+    def _send_message(self, topic, msg):
+        try:
+            self.producer.produce(topic, key=msg['runId'].encode('utf-8'), value=json.dumps(msg).encode('utf-8'))
+        except Exception as e:
+            print(f"Error: {str(e)}")
 
 if __name__ == "__main__":
     kafka_conf = {
