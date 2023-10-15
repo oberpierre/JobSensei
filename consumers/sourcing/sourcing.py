@@ -58,6 +58,10 @@ class Sourcing:
                 self._send_message(Topic.NEW.value, record)
         elif topic == Topic.NEW.value:
             self.data_lake.create_new_listing(record)
+        elif topic == Topic.END.value:
+            outdated_listings = self.delta_processor.get_outdated_ids(record['runId'])
+            if outdated_listings:
+                self.data_lake.inactivate_listings(outdated_listings)
 
     def _send_message(self, topic, msg):
         try:

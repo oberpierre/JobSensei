@@ -47,3 +47,12 @@ VALUES (:url, :reference)''', record)
             return State.ERROR
         finally:
             cursor.close()
+
+    def get_outdated_ids(self, reference):
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute('SELECT url FROM listings WHERE reference != (?)', (reference,))
+            result = cursor.fetchall()
+            return [x[0] for x in result]
+        finally:
+            cursor.close()
