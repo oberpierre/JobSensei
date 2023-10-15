@@ -10,14 +10,17 @@ class Sourcing:
         self.consumer = Consumer(kafka_conf)
         self.producer = Producer(kafka_conf)
         self.data_lake = DataLakeHandler(**mongo_conf)
-        self.delta_processor = DeltaProcessor(self._map_to_delta(self.data_lake.get_all_active_listings()))
+        self.delta_processor = DeltaProcessor(self._map_all_to_delta(self.data_lake.get_all_active_listings()))
 
     def __del__(self):
         if self.consumer:
             self.consumer.close()
 
-    def _map_to_delta(self, data):
-        return [{'url': x['url'], 'reference': x['runId']} for x in data]
+    def _map_all_to_delta(self, data):
+        return [self._map_to_delta(x) for x in data]
+
+    def _map_to_delta(self, record):
+        return {'url': record['url'], 'reference': record['runId']}
 
     def start_processing(self, ):
         self.consumer.subscribe([Topic.SOURCING.value, Topic.END.value, Topic.NEW.value])
