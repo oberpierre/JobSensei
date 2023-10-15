@@ -61,6 +61,8 @@ VALUES (:url, :reference)''', record)
         try:
             cursor.execute('SELECT url FROM listings WHERE reference != (?)', (reference,))
             result = cursor.fetchall()
+            if not result:
+                return []
             return [x[0] for x in result]
         finally:
             cursor.close()
