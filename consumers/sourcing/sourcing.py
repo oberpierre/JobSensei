@@ -7,23 +7,35 @@ from topic import Topic
 from state import State
 
 class Sourcing:
+    """Handles sourcing, processing, and messaging via Kafka topics."""
+
     def __init__(self, kafka_conf, mongo_conf):
+        """Initializes the Kafka consumer, producer, DataLakeHandler, and DeltaProcessor with given configurations."""
+
         self.consumer = Consumer(kafka_conf)
         self.producer = Producer(kafka_conf)
         self.data_lake = DataLakeHandler(**mongo_conf)
         self.delta_processor = DeltaProcessor(self._map_all_to_delta(self.data_lake.get_all_active_listings()))
 
     def __del__(self):
+        """Ensures the Kafka consumer is closed upon object destruction."""
+
         if self.consumer:
             self.consumer.close()
 
     def _map_all_to_delta(self, data):
+        """Maps all records to the required fields for delta processing."""
+
         return [self._map_to_delta(x) for x in data]
 
     def _map_to_delta(self, record):
+        """Maps a single record to required fields for delta processing."""
+
         return {'url': record['url'], 'reference': record['runId']}
 
-    def start_processing(self, ):
+    def start_processing(self):
+        """Starts consuming messages from Kafka, processes them, and handles accordingly based on their topic."""
+
         self.consumer.subscribe([Topic.SOURCING.value, Topic.END.value, Topic.NEW.value, Topic.DELETE.value])
 
         try:
@@ -48,6 +60,8 @@ class Sourcing:
             pass
 
     def _process_message(self, msg):
+        """Processes a single Kafka message based on its topic and takes appropriate action."""
+
         topic = msg.topic()
         value = msg.value()
         record = json.loads(value.decode())
@@ -68,6 +82,8 @@ class Sourcing:
             self.delta_processor.remove_data(record['urls'])
 
     def _send_message(self, topic, msg):
+        """Sends the given message as JSON to a given Kafka topic."""
+        
         try:
             self.producer.produce(topic, key=msg['runId'].encode('utf-8'), value=json.dumps(msg).encode('utf-8'))
         except Exception as e:
