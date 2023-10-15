@@ -4,6 +4,7 @@ from confluent_kafka import Consumer, KafkaError, Producer
 from data_lake_handler import DataLakeHandler
 from delta_processor import DeltaProcessor
 from topic import Topic
+from state import State
 
 class Sourcing:
     def __init__(self, kafka_conf, mongo_conf):
@@ -52,7 +53,8 @@ class Sourcing:
         record = json.loads(value.decode())
 
         if topic == Topic.SOURCING.value:
-            if self.delta_processor.is_new(record):
+            state = self.delta_processor.insert_or_update(self._map_to_delta(record))
+            if state == State.INSERTED:
                 self._send_message(Topic.NEW.value, record)
         elif topic == Topic.NEW.value:
             self.data_lake.create_new_listing(record)
