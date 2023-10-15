@@ -24,7 +24,7 @@ class Sourcing:
         return {'url': record['url'], 'reference': record['runId']}
 
     def start_processing(self, ):
-        self.consumer.subscribe([Topic.SOURCING.value, Topic.END.value, Topic.NEW.value])
+        self.consumer.subscribe([Topic.SOURCING.value, Topic.END.value, Topic.NEW.value, Topic.DELETE.value])
 
         try:
             while True:
@@ -61,7 +61,10 @@ class Sourcing:
         elif topic == Topic.END.value:
             outdated_listings = self.delta_processor.get_outdated_ids(record['runId'])
             if outdated_listings:
-                self.data_lake.inactivate_listings(outdated_listings)
+                delete_message = {'urls': outdated_listings, 'timestamp': record['timestamp'], 'runId': record['runId']}
+                self._send_message(Topic.DELETE.value, delete_message)
+        elif topic == Topic.DELETE.value:
+            self.data_lake.inactivate_listings(record['urls'])
 
     def _send_message(self, topic, msg):
         try:
