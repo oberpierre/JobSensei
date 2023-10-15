@@ -48,6 +48,14 @@ VALUES (:url, :reference)''', record)
         finally:
             cursor.close()
 
+    def remove_data(self, ids):
+        cursor = self.conn.cursor()
+        try:
+            placeholders = ', '.join(['?'] * len(ids))
+            cursor.execute(f'DELETE FROM listings WHERE url IN ({placeholders})', ids)
+        finally:
+            cursor.close()
+
     def get_outdated_ids(self, reference):
         cursor = self.conn.cursor()
         try:

@@ -65,6 +65,7 @@ class Sourcing:
                 self._send_message(Topic.DELETE.value, delete_message)
         elif topic == Topic.DELETE.value:
             self.data_lake.inactivate_listings(record['urls'])
+            self.delta_processor.remove_data(record['urls'])
 
     def _send_message(self, topic, msg):
         try:
