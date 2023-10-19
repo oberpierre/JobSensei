@@ -1,6 +1,7 @@
 import logging
 import json
 import os
+from decouple import config
 from confluent_kafka import Consumer, KafkaError, Producer
 from data_lake_handler import DataLakeHandler
 from delta_processor import DeltaProcessor
@@ -95,16 +96,16 @@ class Sourcing:
 
 if __name__ == "__main__":
     kafka_conf = {
-        'bootstrap.servers': 'kafka:9092', 
-        'group.id': 'jobsensei-sourcing',
+        'bootstrap.servers': config('BOOTSTRAP_SERVERS', default='kafka:9092'), 
+        'group.id': config('GROUP_ID', default='jobsensei-sourcing'),
         'auto.offset.reset': 'earliest',    # Starts from beginning of topic, opposed to 'latest' which starts at the end
         'enable.auto.commit': True,         # Commit offset when message is successfully consumed
     }
     mongo_conf = {
-        'user': os.environ.get("MONGO_USER"), 
-        'password': os.environ.get("MONGO_PASSWORD"), 
-        'server': os.environ.get("MONGO_SERVER"), 
-        'db': os.environ.get("MONGO_DB")
+        'user': config('MONGO_USER', default=''), 
+        'password': config('MONGO_PASSWORD', default=''), 
+        'server': config('MONGO_SERVER', default='localhost:27017'), 
+        'db': config('MONGO_DB', default='jobsensei')
     }
 
     sourcing = Sourcing(kafka_conf, mongo_conf)
