@@ -1,5 +1,8 @@
+import logging
 import sqlite3
 from state import State
+
+logger = logging.getLogger(__name__)
 
 class DeltaProcessor:
     """Handles operations for determining data changes using an in-memory SQLite database."""
@@ -55,7 +58,7 @@ VALUES (:url, :reference)''', record)
                 cursor.execute('UPDATE listings SET reference = (:reference) WHERE url = (:url)', record)
                 return State.UPDATED
         except Exception as e:
-            print(f'Error: {str(e)}')
+            logger.error(f'Error: {str(e)}')
             return State.ERROR
         finally:
             cursor.close()
@@ -80,7 +83,7 @@ VALUES (:url, :reference)''', record)
             if not result:
                 return []
             
-            print('outdated:', len(result))
+            logger.debug('outdated:', len(result))
             return [x[0] for x in result]
         finally:
             cursor.close()

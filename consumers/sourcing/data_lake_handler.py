@@ -1,6 +1,9 @@
+import logging
 from pymongo import MongoClient
 from urllib.parse import quote_plus
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 class DataLakeHandler:
     """Handles operations with the MongoDB data lake."""
@@ -33,8 +36,10 @@ class DataLakeHandler:
 
         record['createdOn'] = self._get_iso_timestamp()
         self.listings_raw.insert_one(record)
+        logger.info(f"New listing inserted with URL: {record['url']}")
 
     def inactivate_listings(self, urls):
         """Marks listings with the given urls as inactive within the data lake."""
 
         self.listings_raw.update_many({'url': {'$in': urls}}, {'$set': {'deletedOn': self._get_iso_timestamp()}})
+        logger.info(f"Listings inactivated. Count: {len(urls)}")

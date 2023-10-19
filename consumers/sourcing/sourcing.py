@@ -1,3 +1,4 @@
+import logging
 import json
 import os
 from confluent_kafka import Consumer, KafkaError, Producer
@@ -5,6 +6,9 @@ from data_lake_handler import DataLakeHandler
 from delta_processor import DeltaProcessor
 from topic import Topic
 from state import State
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 class Sourcing:
     """Handles sourcing, processing, and messaging via Kafka topics."""
@@ -46,16 +50,16 @@ class Sourcing:
                     continue
                 if msg.error():
                     if msg.error().code() == KafkaError._PARTITION_EOF:
-                        print(f'Reached end of partition {msg.partition()}')
+                        logger.info(f'Reached end of partition {msg.partition()}')
                     else:
-                        print(f'Error while consuming message: {msg.error()}')
+                        logger.error(f'Error while consuming message: {msg.error()}')
                 else:
                     self._process_message(msg=msg)
         except KeyboardInterrupt:
-            print("Processing interrupted by user")
+            logger.info("Processing interrupted by user")
             pass
         except Exception as e:
-            print(f"An unexpected error occurred: {str(e)}")
+            logger.error(f"An unexpected error occurred: {str(e)}")
         finally:
             pass
 
@@ -83,11 +87,11 @@ class Sourcing:
 
     def _send_message(self, topic, msg):
         """Sends the given message as JSON to a given Kafka topic."""
-        
+
         try:
             self.producer.produce(topic, key=msg['runId'].encode('utf-8'), value=json.dumps(msg).encode('utf-8'))
         except Exception as e:
-            print(f"Error: {str(e)}")
+            logger.error(f"Error: {str(e)}")
 
 if __name__ == "__main__":
     kafka_conf = {
