@@ -11,15 +11,20 @@ class DataLakeHandler:
     def __init__(self, user, password, server, db):
         """Initializes the MongoDB client and connects to the specified database."""
 
-        self.client = MongoClient('mongodb://%s:%s@%s/%s' % (quote_plus(user), quote_plus(password), quote_plus(server), quote_plus(db)))
+        self.client = MongoClient(self._get_mongo_uri(user, password, server, db))
         self.db = self.client[db]
         self.listings_raw = self.db['listings_raw']
 
     def __del__(self):
         """Ensures the MongoDB client is closed upon object destruction."""
 
-        if self.client:
+        if hasattr(self, 'client') and self.client:
             self.client.close()
+
+    def _get_mongo_uri(self, user, password, server, db):
+        if user and password:
+            return 'mongodb://%s:%s@%s/%s' % (quote_plus(user), quote_plus(password), quote_plus(server), quote_plus(db))
+        return 'mongodb://%s/%s' % (quote_plus(server), quote_plus(db))
 
     def _get_iso_timestamp(self):
         """Returns the current time in ISO format."""
