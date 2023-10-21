@@ -8,29 +8,38 @@ from string import Template
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def _extract_json(raw_text):
-    start = response.find('{')
-    end = response.rfind('}') + 1
-    if start == -1 or end == 0:
-      logging.error("No JSON found in the response.")
-      return None
+class LlmConsumer:
+  
+    def __init__(self, kafka_conf):
+        self.consumer = Consumer(kafka_conf)
 
-    json_str = response[start:end]
-    try:
-      json_obj = json.loads(json_str)
-      return json_obj
-    except json.JSONDecodeError as e:
-      logging.error(f"Failed to parse JSON: {e}.")
-    return None
+    def __del__(self):
+        if self.consumer:
+            self.consumer.close()
 
-def process_message(msg):
-    topic = msg.topic()
-    value = msg.value()
-    record = json.loads(value.decode())
+    def _extract_json(self, raw_text):
+        start = raw_text.find('{')
+        end = raw_text.rfind('}') + 1
+        if start == -1 or end == 0:
+            logging.error("No JSON found in the response.")
+            return None
 
-    logger.debug(f"Received message with topic {topic}: {record}")
-    if topic == 'jobsensei-llm-categorize-v1':
-        template = Template(
+        json_str = raw_text[start:end]
+        try:
+            json_obj = json.loads(json_str)
+            return json_obj
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to parse JSON: {e}.")
+        return None
+
+    def _process_message(self, msg):
+        topic = msg.topic()
+        value = msg.value()
+        record = json.loads(value.decode())
+
+        logger.debug(f"Received message with topic {topic}: {record}")
+        if topic == 'jobsensei-llm-categorize-v1':
+            template = Template(
 """Job listing:
 $listing
 
@@ -57,42 +66,39 @@ From the provided job listing, extract and categorize details into a JSON format
   "other": string[] (miscellaneous info not fitting into other properties)
 }.
 If properties are not specified and not inferrable in the listing, default to empty string or empty array corresponding to the properties data type.""")
-        prompt = template.substitute(listing=record['content'])
-        args = ['-ngl', '17', '-c', '2048']
-        logger.info(f"Invoking LLM with prompt:\n{prompt}")
-        response = llm(prompt, *args)
-        json = _extract_json(response)
-        if json:
-          logger.info(f"Response json: {json}")
-        else:
-          logger.error(f"Could not extract JSON from response: {response}")
+            prompt = template.substitute(listing=record['content'])
+            args = ['-ngl', '17', '-c', '2048']
+            logger.info(f"Invoking LLM with prompt:\n{prompt}")
+            response = llm(prompt, *args)
+            res_json = self._extract_json(response)
+            if res_json:
+                logger.info(f"Response json: {res_json}")
+            else:
+                logger.error(f"Could not extract JSON from response: {response}")
 
-def consume_messages():
-    conf = {
+    def start_processing(self):
+        self.consumer.subscribe(["jobsensei-llm-categorize-v1"])
+
+        while True:
+            msg = self.consumer.poll(1.0)
+
+            if msg is None:
+                continue
+            if msg.error():
+                if msg.error().code() == KafkaError._PARTITION_EOF:
+                    logger.info(f'Reached end of partition {msg.partition()}')
+                else:
+                    logger.error(f'Error while consuming message: {msg.error()}')
+            else:
+                self._process_message(msg)
+
+if __name__ == "__main__":
+    kafka_conf = {
         'bootstrap.servers': config('BOOTSTRAP_SERVERS', default='kafka:9092'),
         'group.id': config('GROUP_ID', default='jobsensei-llm'),
         'max.poll.interval.ms': config('MAX_POLL_INVERVAL', default=1000000),
         'auto.offset.reset': 'earliest',    # Starts from beginning of topic, opposed to 'latest' which starts at the end
         'enable.auto.commit': True,         # Commit offset when message is successfully consumed
     }
-
-    consumer = Consumer(conf)
-    consumer.subscribe(["jobsensei-llm-categorize-v1"])
-
-    while True:
-        msg = consumer.poll(1.0)
-
-        if msg is None:
-            continue
-        if msg.error():
-            if msg.error().code() == KafkaError._PARTITION_EOF:
-                logger.info(f'Reached end of partition {msg.partition()}')
-            else:
-                logger.error(f'Error while consuming message: {msg.error()}')
-        else:
-            process_message(msg)
-
-    consumer.close()
-
-if __name__ == "__main__":
-    consume_messages()
+    consumer = LlmConsumer(kafka_conf)
+    consumer.start_processing()
