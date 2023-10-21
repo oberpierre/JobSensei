@@ -77,6 +77,7 @@ class Sourcing:
                 self._send_message(Topic.NEW.value, record)
         elif topic == Topic.NEW.value:
             self.data_lake.create_new_listing(record)
+            self._send_message('jobsensei-llm-categorize-v1', {x:record[x] for x in record if x != '_id'})
         elif topic == Topic.END.value:
             outdated_listings = self.delta_processor.get_outdated_ids(record['runId'])
             if outdated_listings:
