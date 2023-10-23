@@ -72,21 +72,33 @@ class Sourcing:
         record = json.loads(value.decode())
 
         if topic == Topic.SRC_SOURCING.value:
-            state = self.delta_processor.insert_or_update(self._map_to_delta(record))
-            if state == State.INSERTED:
-                self._send_message(Topic.SRC_NEW, record)
+            self._source_listing(record)
         elif topic == Topic.SRC_NEW.value:
-            self.data_lake.create_new_listing(record)
-            logger.info(f"Sending job listing to llm for ID {record['url']}")
-            self._send_message(Topic.LLM_CATEGORIZE, {x:record[x] for x in record if x != '_id'})
+            self._create_listing(record)
         elif topic == Topic.SRC_END.value:
-            outdated_listings = self.delta_processor.get_outdated_ids(record['runId'])
-            if outdated_listings:
-                delete_message = {'urls': outdated_listings, 'timestamp': record['timestamp'], 'runId': record['runId']}
-                self._send_message(Topic.SRC_DELETE, delete_message)
+            self._get_outdated_listings(record)
         elif topic == Topic.SRC_DELETE.value:
-            self.data_lake.inactivate_listings(record['urls'])
-            self.delta_processor.remove_data(record['urls'])
+            self._inactivate_listing(record)
+
+    def _source_listing(self, record):
+        state = self.delta_processor.insert_or_update(self._map_to_delta(record))
+        if state == State.INSERTED:
+            self._send_message(Topic.SRC_NEW, record)
+
+    def _create_listing(self, record):
+        self.data_lake.create_new_listing(record)
+        logger.info(f"Sending job listing to llm for ID {record['url']}")
+        self._send_message(Topic.LLM_CATEGORIZE, {x:record[x] for x in record if x != '_id'})
+
+    def _get_outdated_listings(self, record):
+        outdated_listings = self.delta_processor.get_outdated_ids(record['runId'])
+        if outdated_listings:
+            delete_message = {'urls': outdated_listings, 'timestamp': record['timestamp'], 'runId': record['runId']}
+            self._send_message(Topic.SRC_DELETE, delete_message)
+
+    def _inactivate_listing(self, record):
+        self.data_lake.inactivate_listings(record['urls'])
+        self.delta_processor.remove_data(record['urls'])
 
     def _send_message(self, topic, msg):
         """Sends the given message as JSON to a given Kafka topic."""
