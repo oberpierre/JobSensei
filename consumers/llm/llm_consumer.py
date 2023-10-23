@@ -4,6 +4,7 @@ from decouple import config
 from llm import llm
 from confluent_kafka import Consumer, KafkaError
 from string import Template
+from topic import Topic
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ class LlmConsumer:
         record = json.loads(value.decode())
 
         logger.debug(f"Received message with topic {topic}: {record}")
-        if topic == 'jobsensei-llm-categorize-v1':
+        if topic == Topic.LLM_CATEGORIZE.value:
             template = Template(
 """Job listing:
 $listing
@@ -77,7 +78,7 @@ If properties are not specified and not inferrable in the listing, default to em
                 logger.error(f"Could not extract JSON from response: {response}")
 
     def start_processing(self):
-        self.consumer.subscribe(["jobsensei-llm-categorize-v1"])
+        self.consumer.subscribe([Topic.LLM_CATEGORIZE.value])
 
         while True:
             msg = self.consumer.poll(1.0)

@@ -1,0 +1,6 @@
+py_library(
+    name = "common",
+    srcs = glob(["*.py"]),
+    imports = ["."],
+    visibility = ["//consumers:__subpackages__"]
+)

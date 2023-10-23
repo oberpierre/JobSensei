@@ -41,7 +41,7 @@ class Sourcing:
     def start_processing(self):
         """Starts consuming messages from Kafka, processes them, and handles accordingly based on their topic."""
 
-        self.consumer.subscribe([Topic.SOURCING.value, Topic.END.value, Topic.NEW.value, Topic.DELETE.value])
+        self.consumer.subscribe([Topic.SRC_SOURCING.value, Topic.SRC_END.value, Topic.SRC_NEW.value, Topic.SRC_DELETE.value])
 
         try:
             while True:
@@ -71,19 +71,20 @@ class Sourcing:
         value = msg.value()
         record = json.loads(value.decode())
 
-        if topic == Topic.SOURCING.value:
+        if topic == Topic.SRC_SOURCING.value:
             state = self.delta_processor.insert_or_update(self._map_to_delta(record))
             if state == State.INSERTED:
-                self._send_message(Topic.NEW.value, record)
-        elif topic == Topic.NEW.value:
+                self._send_message(Topic.SRC_NEW, record)
+        elif topic == Topic.SRC_NEW.value:
             self.data_lake.create_new_listing(record)
-            self._send_message('jobsensei-llm-categorize-v1', {x:record[x] for x in record if x != '_id'})
-        elif topic == Topic.END.value:
+            logger.info(f"Sending job listing to llm for ID {record['url']}")
+            self._send_message(Topic.LLM_CATEGORIZE, {x:record[x] for x in record if x != '_id'})
+        elif topic == Topic.SRC_END.value:
             outdated_listings = self.delta_processor.get_outdated_ids(record['runId'])
             if outdated_listings:
                 delete_message = {'urls': outdated_listings, 'timestamp': record['timestamp'], 'runId': record['runId']}
-                self._send_message(Topic.DELETE.value, delete_message)
-        elif topic == Topic.DELETE.value:
+                self._send_message(Topic.SRC_DELETE, delete_message)
+        elif topic == Topic.SRC_DELETE.value:
             self.data_lake.inactivate_listings(record['urls'])
             self.delta_processor.remove_data(record['urls'])
 
@@ -91,7 +92,7 @@ class Sourcing:
         """Sends the given message as JSON to a given Kafka topic."""
 
         try:
-            self.producer.produce(topic, key=msg['runId'].encode('utf-8'), value=json.dumps(msg).encode('utf-8'))
+            self.producer.produce(topic.value, key=msg['runId'].encode('utf-8'), value=json.dumps(msg).encode('utf-8'))
         except Exception as e:
             logger.error(f"Error: {str(e)}")
 
