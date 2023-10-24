@@ -1,3 +1,4 @@
+import sys
 import logging
 import json
 from decouple import config
@@ -11,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 class LlmConsumer:
   
-    def __init__(self, kafka_conf):
+    def __init__(self, kafka_conf, llm_args):
+        self.llm_args = llm_args if llm_args else []
         self.consumer = Consumer(kafka_conf)
 
     def __del__(self):
@@ -40,15 +42,18 @@ class LlmConsumer:
 
         logger.debug(f"Received message with topic {topic}: {record}")
         if topic == Topic.LLM_CATEGORIZE.value:
-            (prompt, prompt_args) = Prompts.get_categorize_prompt(listing=record['content'])
-            args = ['-ngl', '17', *prompt_args]
-            logger.info(f"Invoking LLM with prompt:\n{prompt}")
-            response = llm(prompt, *args)
+            prompt, prompt_args = Prompts.get_categorize_prompt(listing=record['content'])
+            response = self._invoke_llm(prompt, prompt_args)
             res_json = self._extract_json(response)
             if res_json:
                 logger.info(f"Response json: {res_json}")
             else:
                 logger.error(f"Could not extract JSON from response: {response}")
+
+    def _invoke_llm(self, prompt, prompt_args):
+        args = [*self.llm_args, *(prompt_args if prompt_args else [])]
+        logger.info(f"Invoking LLM with args {args} and prompt:\n{prompt}")
+        return llm(prompt, *args)
 
     def start_processing(self):
         self.consumer.subscribe([Topic.LLM_CATEGORIZE.value])
@@ -74,5 +79,6 @@ if __name__ == "__main__":
         'auto.offset.reset': 'earliest',    # Starts from beginning of topic, opposed to 'latest' which starts at the end
         'enable.auto.commit': True,         # Commit offset when message is successfully consumed
     }
-    consumer = LlmConsumer(kafka_conf)
+    llm_args = sys.argv[1:]
+    consumer = LlmConsumer(kafka_conf, llm_args)
     consumer.start_processing()
