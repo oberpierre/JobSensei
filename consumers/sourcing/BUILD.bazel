@@ -4,6 +4,6 @@ py_binary(
     name = "sourcing",
     srcs = glob(["*.py"]),
     imports = ["."],
-    data = [".env"],
+    data = glob([".env"]),
     deps = ["//consumers/common", requirement("confluent-kafka"), requirement("pymongo"), requirement("python-decouple")]
 )
