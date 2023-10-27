@@ -11,19 +11,26 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 class LlmConsumer:
+    """A consumer class for processing messages with a language model and producing results."""
   
     def __init__(self, kafka_conf, llm_args):
+        """Initializing a new instance of LlmConsumer."""
+
         self.llm_args = llm_args if llm_args else []
         self.consumer = Consumer(kafka_conf)
         self.producer = Producer(kafka_conf)
 
     def __del__(self):
+        """Ensure proper cleanup by closing the Kafka consumer and flushing the Kafka producer."""
+
         if self.consumer:
             self.consumer.close()
         if self.producer:
             self.producer.flush()
 
     def _extract_json(self, raw_text):
+        """Extract the JSON object from the raw response string of the LLM."""
+
         start = raw_text.find('{')
         end = raw_text.rfind('}') + 1
         if start == -1 or end == 0:
@@ -39,6 +46,8 @@ class LlmConsumer:
         return None
 
     def _process_message(self, msg):
+        """Process a Kafka message, invoking the language model and publishing the result via Kafka."""
+
         topic = msg.topic()
         value = msg.value()
         record = json.loads(value.decode())
@@ -56,6 +65,8 @@ class LlmConsumer:
                 logger.error(f"Could not extract JSON from response: {response}")
 
     def _invoke_llm(self, prompt, prompt_args):
+        """Invoking the language model with the given prompt and arguments."""
+
         args = [*self.llm_args, *(prompt_args if prompt_args else [])]
         logger.info(f"Invoking LLM with args {args} and prompt:\n{prompt}")
         return llm(prompt, *args)
@@ -72,6 +83,8 @@ class LlmConsumer:
             logger.error(f"Error: {str(e)}")
 
     def start_processing(self):
+        """Starts the message consumption and processing loop."""
+
         self.consumer.subscribe([Topic.LLM_CATEGORIZE.value])
 
         while True:

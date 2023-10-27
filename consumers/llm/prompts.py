@@ -30,13 +30,16 @@ From the provided job listing, extract and categorize details into a JSON format
 If properties are not specified and not inferrable in the listing, default to empty string or empty array corresponding to the properties data type."""
 
 class Prompts:
+    """A class for managing and utilizing prompts."""
 
     @staticmethod
     def _get_template(prompt):
+        """Retrieve a string template associated with the given prompt."""
         return Template(prompt.value)
 
     @staticmethod
     def get_categorize_prompt(listing):
+        """Generate a prompt and associated LLM args for the categorization for a job listing."""
         template = Prompts._get_template(Prompt.CATEGORIZE)
         prompt = template.substitute(listing=listing)
         return (prompt, ('-c', '2048'))
