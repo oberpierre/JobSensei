@@ -59,11 +59,13 @@ genrule(
     ],
 )
 
-py_binary(
+py_library(
     name = "llm",
     srcs = ["llm.py"],
     data = [
         ":mainbin",
         ":model/ggml-model-q5_K_M.gguf"
     ],
+    imports = ["."],
+    visibility = ["//consumers/llm:__pkg__"]
 )

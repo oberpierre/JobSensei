@@ -7,6 +7,6 @@ py_binary(
     main = "src/main.py",
     deps = [
         requirement("Scrapy"),
-        requirement("kafka-python")
+        requirement("confluent-kafka")
     ],
 )

@@ -1,0 +1,9 @@
+load("@pip_deps//:requirements.bzl", "requirement")
+
+py_binary(
+    name = "llm_consumer",
+    srcs = glob(["*.py"]),
+    imports = ["."],
+    data = glob([".env"]),
+    deps = ["//consumers/common", "//llm:llm", requirement("confluent-kafka"), requirement("python-decouple")]
+)

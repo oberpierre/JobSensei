@@ -1,2 +1,4 @@
 Scrapy
-kafka-python
+confluent-kafka
+pymongo
+python-decouple
