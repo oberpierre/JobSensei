@@ -1,5 +1,6 @@
 import logging
 from pymongo import MongoClient
+from pymongo.errors import BulkWriteError, ConnectionFailure, OperationFailure
 from urllib.parse import quote_plus
 from datetime import datetime
 
@@ -14,6 +15,7 @@ class DataLakeHandler:
         self.client = MongoClient(self._get_mongo_uri(user, password, server, db))
         self.db = self.client[db]
         self.listings_raw = self.db['listings_raw']
+        self.listings_categorized = self.db['listings_categorized']
 
     def __del__(self):
         """Ensures the MongoDB client is closed upon object destruction."""
@@ -46,5 +48,30 @@ class DataLakeHandler:
     def inactivate_listings(self, urls):
         """Marks listings with the given urls as inactive within the data lake."""
 
-        self.listings_raw.update_many({'url': {'$in': urls}}, {'$set': {'deletedOn': self._get_iso_timestamp()}})
-        logger.info(f"Listings inactivated. Count: {len(urls)}")
+        try:
+            self.listings_raw.update_many({'url': {'$in': urls}}, {'$set': {'deletedOn': self._get_iso_timestamp()}})
+            self.listings_categorized.update_many({'url': {'$in': urls}}, {'$set': {'deletedOn': self._get_iso_timestamp()}})
+            logger.info(f"Listings inactivated. Count: {len(urls)}")
+        except (OperationFailure, ConnectionFailure) as e:
+            logger.error(f"Failed to inactivate listings. Error: {e}")
+
+    def insert_categorization(self, record):
+        """Promotes a listing in our data lake from the bronze to the silver tier."""
+        try:
+            url = record['url']
+            # Fetching the corresponding listing from the bronze tier
+            listing = self.listings_raw.find_one({'url': url})
+            if not listing:
+                logger.error(f"Listing with url {url} could not found in bronze tier!")
+                return
+
+            # Removing '_id' and 'content' from the listing
+            listing.pop('_id', None)
+            listing.pop('content', None)
+
+            categorized_listing = {**listing, **record}
+            self.listings_categorized.insert_one(categorized_listing)
+
+            logger.info(f"Listing with url {url} categorized.")
+        except (OperationFailure, ConnectionFailure, BulkWriteError) as e:
+            logger.error(f"Failed to insert categorization for {record['url']}. Error: {e}")

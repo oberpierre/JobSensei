@@ -3,7 +3,7 @@ import logging
 import json
 from decouple import config
 from llm import llm
-from confluent_kafka import Consumer, KafkaError
+from confluent_kafka import Consumer, KafkaError, Producer
 from topic import Topic
 from prompts import Prompts
 
@@ -15,10 +15,13 @@ class LlmConsumer:
     def __init__(self, kafka_conf, llm_args):
         self.llm_args = llm_args if llm_args else []
         self.consumer = Consumer(kafka_conf)
+        self.producer = Producer(kafka_conf)
 
     def __del__(self):
         if self.consumer:
             self.consumer.close()
+        if self.producer:
+            self.producer.flush()
 
     def _extract_json(self, raw_text):
         start = raw_text.find('{')
@@ -47,6 +50,8 @@ class LlmConsumer:
             res_json = self._extract_json(response)
             if res_json:
                 logger.info(f"Response json: {res_json}")
+                res_json['url'] = record['url']
+                self._send_message(Topic.SRC_CATEGORIZED, record['url'], res_json)
             else:
                 logger.error(f"Could not extract JSON from response: {response}")
 
@@ -54,6 +59,17 @@ class LlmConsumer:
         args = [*self.llm_args, *(prompt_args if prompt_args else [])]
         logger.info(f"Invoking LLM with args {args} and prompt:\n{prompt}")
         return llm(prompt, *args)
+
+    def _send_message(self, topic, key, msg):
+        """Sends the given message as JSON to a given Kafka topic."""
+
+        logger.info(f"Sending message {key}: {msg} for topic {topic.value}")
+
+        try:
+            self.producer.produce(topic.value, key=key, value=json.dumps(msg).encode('utf-8'))
+            self.producer.flush()
+        except Exception as e:
+            logger.error(f"Error: {str(e)}")
 
     def start_processing(self):
         self.consumer.subscribe([Topic.LLM_CATEGORIZE.value])

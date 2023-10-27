@@ -27,6 +27,8 @@ class Sourcing:
 
         if self.consumer:
             self.consumer.close()
+        if self.producer:
+            self.producer.flush()
 
     def _map_all_to_delta(self, data):
         """Maps all records to the required fields for delta processing."""
@@ -41,7 +43,13 @@ class Sourcing:
     def start_processing(self):
         """Starts consuming messages from Kafka, processes them, and handles accordingly based on their topic."""
 
-        self.consumer.subscribe([Topic.SRC_SOURCING.value, Topic.SRC_END.value, Topic.SRC_NEW.value, Topic.SRC_DELETE.value])
+        self.consumer.subscribe([
+            Topic.SRC_SOURCING.value,
+            Topic.SRC_END.value,
+            Topic.SRC_NEW.value,
+            Topic.SRC_DELETE.value,
+            Topic.SRC_CATEGORIZED.value,
+        ])
 
         try:
             while True:
@@ -71,6 +79,8 @@ class Sourcing:
         value = msg.value()
         record = json.loads(value.decode())
 
+        logger.info(f"Received message with for topic {topic}: {record}")
+
         if topic == Topic.SRC_SOURCING.value:
             self._source_listing(record)
         elif topic == Topic.SRC_NEW.value:
@@ -79,6 +89,8 @@ class Sourcing:
             self._get_outdated_listings(record)
         elif topic == Topic.SRC_DELETE.value:
             self._inactivate_listing(record)
+        elif topic == Topic.SRC_CATEGORIZED.value:
+            self._create_categorized_listing(record)
 
     def _source_listing(self, record):
         state = self.delta_processor.insert_or_update(self._map_to_delta(record))
@@ -99,6 +111,9 @@ class Sourcing:
     def _inactivate_listing(self, record):
         self.data_lake.inactivate_listings(record['urls'])
         self.delta_processor.remove_data(record['urls'])
+
+    def _create_categorized_listing(self, record):
+        self.data_lake.insert_categorization(record)
 
     def _send_message(self, topic, msg):
         """Sends the given message as JSON to a given Kafka topic."""
