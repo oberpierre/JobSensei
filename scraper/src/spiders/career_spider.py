@@ -6,7 +6,7 @@ class CareerSpider(scrapy.Spider):
 
     def start_requests(self):
         urls = [
-            "https://www.google.com/about/careers/applications/jobs/results/?q=engineer&distance=50&hl=en_US&jlo=en_US&location=Zurich%2C%20Switzerland&location=Singapore",
+            "https://www.google.com/about/careers/applications/jobs/results/136914285465871046-software-engineer-machine-learning-bard?q=engineer&hl=en_US&jlo=en_US&location=Zurich,+Switzerland&location=Singapore&sort_by=date",
         ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
@@ -39,5 +39,5 @@ class CareerSpider(scrapy.Spider):
             for listing in response.css("div[jsname='tIk9qd']"):
                 yield {
                     "url": response.url,
-                    "content": listing.get(),
+                    "content": ' '.join(listing.css("*::text").getall()),
                 }
