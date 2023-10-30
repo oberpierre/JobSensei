@@ -36,7 +36,6 @@ http_archive(
     sha256 = "52fe092cc694ee4965c37915b5054a5952c9b08a36db5266246340cd693f9c91",
     strip_prefix = "llama.cpp-b1305",
     urls = ["https://github.com/ggerganov/llama.cpp/archive/refs/tags/b1305.tar.gz"],
-    visibility = ["//visibility:public"],
 )
 
 pip_parse(

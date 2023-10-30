@@ -1,61 +1,14 @@
-load("@rules_foreign_cc//foreign_cc:defs.bzl", "make")
-load("@llm_deps//:requirements.bzl", "all_requirements")
-
-make(
-    name = "llama_cpp_bins",
-    lib_source = "@llama_cpp//:sources",
-    out_binaries = [
-        "main",
-        "quantize",
-    ],
-    args = [
-        "-E CXXFLAGS:=-std=c++11",
-    ],
-    env = {
-        "CC": "/usr/bin/gcc",
-        "CXX": "/usr/bin/g++",
-        "LLAMA_CUBLAS": "1",
-    },
-    postfix_script = "cp main quantize $INSTALLDIR/bin/",
-    targets = [
-        "main",
-        "quantize",
-    ],
-)
-
-genrule(
-    name = "main",
-    srcs = ["//llm:llama_cpp_bins"],
-    outs = ["mainbin"],
-    cmd = "cp `ls $(locations //llm:llama_cpp_bins) | grep main$$` $(@)",
-    executable = True,
-)
-
-genrule(
-    name = "quantize",
-    srcs = ["//llm:llama_cpp_bins"],
-    outs = ["quantizebin"],
-    cmd = "cp `ls $(locations //llm:llama_cpp_bins) | grep quantize$$` $(@)",
-    executable = True,
-)
-
-py_binary(
-    name = "convert",
-    srcs = ["@llama_cpp//:sources"],
-    deps = all_requirements,
-)
-
 genrule(
     name = "conversion",
     srcs = glob(["model/**"]),
     outs = ["model/ggml-model-q5_K_M.gguf"],
     cmd = " && ".join([
-        "$(location //llm:convert) llm/model/llama2",
-        "$(location //llm:quantize) llm/model/llama2/ggml-model-f16.gguf $(@) q5_K_M",
+        "$(location @llama_cpp//:convert) llm/model/llama2",
+        "$(location @llama_cpp//:quantize) llm/model/llama2/ggml-model-f16.gguf $(@) q5_K_M",
     ]),
     tools = [
-        "//llm:convert",
-        "//llm:quantize",
+        "@llama_cpp//:convert",
+        "@llama_cpp//:quantize",
     ],
 )
 
@@ -63,7 +16,7 @@ py_library(
     name = "llm",
     srcs = ["llm.py"],
     data = [
-        ":mainbin",
+        "@llama_cpp//:mainbin",
         ":model/ggml-model-q5_K_M.gguf"
     ],
     imports = ["."],
