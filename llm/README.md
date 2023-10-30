@@ -15,7 +15,7 @@ Before building, download the llama2 model from [huggingface.co](https://hugging
 
 ### llama.cpp
 
-We employ the [`llama.cpp`](https://github.com/ggerganov/llama.cpp) project to increase the performance (in terms of token generation) of our LLM. This library is designed for running models, including llama2, with optimized quantization methods. Out of the box, we have configured it for `q4_0` quantization, but you might want to select a different quantization method based on your target platform and hardware. See [llama.cpp's quantization section](https://github.com/ggerganov/llama.cpp#quantization) for more detailed benchmarks and trade-offs.
+We employ the [`llama.cpp`](https://github.com/ggerganov/llama.cpp) project to increase the performance (in terms of token generation) of our LLM. This library is designed for running models, including llama2, with optimized quantization methods. Out of the box, we have configured it for `Q5_K_M` quantization with CUDA support, but you might want to select a different method based on your target platform and hardware. See [llama.cpp's quantization section](https://github.com/ggerganov/llama.cpp#quantization) for more detailed benchmarks and trade-offs.
 
 ### Building
 

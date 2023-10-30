@@ -20,7 +20,7 @@ def llm(prompt, *args):
         raise Exception("Prompt must be provided!")
 
     llm_args = [
-        "./llm/mainbin", 
+        "./external/llama_cpp/mainbin", 
         "-m", "./llm/model/ggml-model-q5_K_M.gguf"
     ]
 
