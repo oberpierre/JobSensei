@@ -1,0 +1,8 @@
+load("//web:defs.bzl", "ng_application")
+
+package(default_visibility = ["//visibility:public"])
+
+# The Angular demo application
+ng_application(
+    name = "app",
+)
