@@ -46,10 +46,10 @@ ENV PATH="$PATH:/usr/local/cuda/bin"
 ENV CUDA_PATH="/usr/local/cuda"
 ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64"
 
-# These files need to be removed for since they will be created with gpu passthrough, which fails otherwise
-RUN rm -rf  /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1 \
-            /usr/lib/x86_64-linux-gnu/libcuda.so.1 \
-            /usr/lib/x86_64-linux-gnu/libcudadebugger.so.1
+# These files need to be removed, since they will be created with gpu passthrough and will fail otherwise
+RUN rm -rf /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1 \
+           /usr/lib/x86_64-linux-gnu/libcuda.so.1 \
+           /usr/lib/x86_64-linux-gnu/libcudadebugger.so.1
 
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
