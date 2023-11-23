@@ -13,7 +13,7 @@ import { AppComponent } from './app.component';
   imports: [
     BrowserModule,
     RouterModule.forRoot([], { useHash: true }),
-    NbThemeModule.forRoot({ name: 'default'}),
+    NbThemeModule.forRoot({ name: 'dark'}),
     NbLayoutModule,
     NbEvaIconsModule,
   ],

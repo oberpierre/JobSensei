@@ -20,7 +20,7 @@ copy_file(
 directory_path(
     name = "nebular-theme-path",
     directory = "//web:node_modules/@nebular/theme/dir",
-    path = "styles/prebuilt/default.css",
+    path = "styles/prebuilt/dark.css",
 )
 
 copy_file(
