@@ -193,7 +193,7 @@ def _pkg_web(name, entry_point, entry_deps, html_assets, assets, production, vis
                    "%s/%s" % (native.package_name(), html_out),
                ] +
                # Generic Assets
-               ["--assets"] + ["$(execpath %s)" % s for s in html_assets] +
+               ["--assets"] + ["$(rootpath %s)" % s for s in html_assets] +
                ["--scripts", "--module", "polyfills-bundle.js"] +
                # Main bundle to bootstrap the app last
                ["--scripts", "--module", "%s/main.js" % bundle],
