@@ -1,0 +1,50 @@
+load("@aspect_bazel_lib//lib:directory_path.bzl", "directory_path")
+load("@aspect_bazel_lib//lib:copy_file.bzl", "copy_file")
+load("//web:defs.bzl", "ng_application")
+
+package(default_visibility = ["//visibility:public"])
+
+# An asset from within an npm package
+directory_path(
+    name = "normalize-css-dir-path",
+    directory = "//web:node_modules/normalize.css/dir",
+    path = "normalize.css",
+)
+
+copy_file(
+    name = "normalize-css",
+    src = ":normalize-css-dir-path",
+    out = "normalize.css",
+)
+
+directory_path(
+    name = "nebular-theme-path",
+    directory = "//web:node_modules/@nebular/theme/dir",
+    path = "styles/prebuilt/dark.css",
+)
+
+copy_file(
+    name = "nebular-theme",
+    src = ":nebular-theme-path",
+    out = "nebular.css",
+)
+
+# The Angular demo application
+ng_application(
+    name = "app",
+    deps = [
+        "//web:node_modules/@angular/animations",
+        "//web:node_modules/@angular/cdk",
+        "//web:node_modules/@angular/forms",
+        "//web:node_modules/@nebular/theme",
+        "//web:node_modules/@nebular/eva-icons",
+        "//web:node_modules/eva-icons",
+        "//web:node_modules/normalize.css",
+    ],
+        html_assets = [
+        ":normalize.css",
+        ":nebular.css",
+        "styles.css",
+        "favicon.ico"
+    ]
+)

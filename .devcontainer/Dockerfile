@@ -46,6 +46,12 @@ ENV PATH="$PATH:/usr/local/cuda/bin"
 ENV CUDA_PATH="/usr/local/cuda"
 ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64"
 
+# Installing chrome for FE testing
+RUN apt-get install -y fonts-liberation libu2f-udev libvulkan1 xdg-utils \
+    && curl -fSsL -o google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get install -y ./google-chrome-stable_current_amd64.deb \
+    && rm google-chrome-stable_current_amd64.deb
+
 # These files need to be removed, since they will be created with gpu passthrough and will fail otherwise
 RUN rm -rf /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1 \
            /usr/lib/x86_64-linux-gnu/libcuda.so.1 \

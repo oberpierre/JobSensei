@@ -25,5 +25,8 @@ jobs:
       - name: Bazel build
         run: bazel build -- //... -//llm/... -//consumers/llm/...
 
+      - name: Setup chrome
+        uses: browser-actions/setup-chrome@v1
+
       - name: Bazel test
         run: bazel test -- //... -//llm/... -//consumers/llm/...
