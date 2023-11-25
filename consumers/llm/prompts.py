@@ -17,7 +17,7 @@ From the provided job listing, extract and categorize details into a JSON format
   "location": {
     "city": string,
     "country": string (ISO 3166-1 alpha-2 country code, e.g. SG for Singapore)
-  },
+  }[],
   "skills": string[],
   "employmentType": "full" | "part" | "temp" | "n/a" (default to n/a if not specified),
   "responsibilities": string[],
