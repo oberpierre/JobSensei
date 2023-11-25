@@ -1,0 +1,13 @@
+load("@pip_deps//:requirements.bzl", "requirement")
+
+py_binary(
+    name = "graphql",
+    srcs = glob(["*.py"]),
+    imports = ['.'],
+    main = "server.py",
+    deps = [
+        requirement("graphene"),
+        requirement("flask"),
+        requirement("graphql-server")
+    ],
+)
