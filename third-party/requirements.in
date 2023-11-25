@@ -2,3 +2,6 @@ Scrapy
 confluent-kafka
 pymongo
 python-decouple
+graphene
+flask
+graphql-server
