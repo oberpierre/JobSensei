@@ -52,7 +52,7 @@ class LlmConsumer:
         value = msg.value()
         record = json.loads(value.decode())
 
-        logger.debug(f"Received message with topic {topic}: {record}")
+        logger.debug(f"Received message with topic {topic}: {record['uuid']}")
         if topic == Topic.LLM_CATEGORIZE.value:
             prompt, prompt_args = Prompts.get_categorize_prompt(listing=record['content'])
             response = self._invoke_llm(prompt, prompt_args)
@@ -60,7 +60,8 @@ class LlmConsumer:
             if res_json:
                 logger.info(f"Response json: {res_json}")
                 res_json['url'] = record['url']
-                self._send_message(Topic.SRC_CATEGORIZED, record['url'], res_json)
+                res_json['uuid'] = record['uuid']
+                self._send_message(Topic.SRC_CATEGORIZED, record['uuid'], res_json)
             else:
                 logger.error(f"Could not extract JSON from response: {response}")
 

@@ -9,3 +9,6 @@ db.createUser({
         role: 'readWrite', db: 'jobsensei',
     }],
 });
+
+db.listings_raw.createIndex({'uuid': 1}, {unique: true});
+db.listings_categorized.createIndex({'uuid': 1}, {unique: true});
