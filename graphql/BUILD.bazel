@@ -4,10 +4,13 @@ py_binary(
     name = "graphql",
     srcs = glob(["*.py"]),
     imports = ['.'],
+    data = glob([".env"]),
     main = "server.py",
     deps = [
         requirement("graphene"),
         requirement("flask"),
-        requirement("graphql-server")
+        requirement("graphql-server"),
+        requirement("pymongo"),
+        requirement("python-decouple"),
     ],
 )
