@@ -14,10 +14,24 @@ describe('JobCardComponent', () => {
     
     fixture = TestBed.createComponent(JobCardComponent);
     component = fixture.componentInstance;
+    // mock job input
+    component.job = {
+      title: 'Staff Software Engineer, EvilCorp',
+      summary: 'EvilCorp is looking for the best of the best software engineers to ensure world dominance. Join our team to be part of it!'
+    }
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render given title and summary in the job card', () => {
+    const element = fixture.nativeElement;
+
+    const title = element.querySelector('.title');
+    const summary = element.querySelector('.summary');
+    expect(title.textContent).toBe('Staff Software Engineer, EvilCorp');
+    expect(summary.textContent).toBe('EvilCorp is looking for the best of the best software engineers to ensure world dominance. Join our team to be part of it!')
+  })
 });
