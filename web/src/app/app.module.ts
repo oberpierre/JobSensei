@@ -5,6 +5,7 @@ import { NbLayoutModule, NbThemeModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 
 import { AppComponent } from './app.component';
+import { JobListComponent } from './job-list/job-list.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { AppComponent } from './app.component';
     NbThemeModule.forRoot({ name: 'dark'}),
     NbLayoutModule,
     NbEvaIconsModule,
+    JobListComponent,
   ],
   providers: [],
   bootstrap: [AppComponent]

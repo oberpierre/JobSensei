@@ -1,0 +1,7 @@
+<nb-card>
+    <nb-list>
+        <ng-container *ngFor="let job of jobs" ngProjectAs="nb-list-item">
+            <app-job-card [job]="job" />
+        </ng-container>
+    </nb-list>
+</nb-card>
