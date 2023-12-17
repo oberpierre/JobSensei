@@ -14,5 +14,5 @@ import { Job } from '../job';
   styleUrl: './job-card.component.css'
 })
 export class JobCardComponent {
-  @Input() job: Job = {title: ''};
+  @Input() job: Job = {uuid: '', title: ''};
 }

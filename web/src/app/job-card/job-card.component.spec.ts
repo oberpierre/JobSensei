@@ -16,6 +16,7 @@ describe('JobCardComponent', () => {
     component = fixture.componentInstance;
     // mock job input
     component.job = {
+      uuid: '1',
       title: 'Staff Software Engineer, EvilCorp',
       summary: 'EvilCorp is looking for the best of the best software engineers to ensure world dominance. Join our team to be part of it!'
     }

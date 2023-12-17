@@ -23,8 +23,8 @@ describe('JobListComponent', () => {
       fixture = TestBed.createComponent(JobListComponent);
       component = fixture.componentInstance;
       component.jobs = [
-        {title: 'foo', summary: 'bar'},
-        {title: 'fizzbuzz'}
+        {uuid: '1', title: 'foo', summary: 'bar'},
+        {uuid: '2', title: 'fizzbuzz'}
       ];
       fixture.detectChanges();
     });
@@ -38,7 +38,7 @@ describe('JobListComponent', () => {
     const cards = fixture.debugElement.queryAll(By.directive(JobCardComponent));
     const jobs = cards.map((card) => card.componentInstance.job);
     expect(jobs.length).toBe(2);
-    expect(jobs[0]).toEqual({title: 'foo', summary: 'bar'});
-    expect(jobs[1]).toEqual({title: 'fizzbuzz'});
+    expect(jobs[0]).toEqual({uuid: '1', title: 'foo', summary: 'bar'});
+    expect(jobs[1]).toEqual({uuid: '2', title: 'fizzbuzz'});
   })
 });
