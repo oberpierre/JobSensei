@@ -5,6 +5,7 @@ import { NbLayoutModule, NbThemeModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 
 import { AppComponent } from './app.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 import { JobListComponent } from './job-list/job-list.component';
 import { routes } from './app.routes';
 
@@ -19,6 +20,7 @@ import { routes } from './app.routes';
     NbThemeModule.forRoot({ name: 'dark'}),
     NbLayoutModule,
     NbEvaIconsModule,
+    NotFoundComponent,
     JobListComponent,
   ],
   providers: [provideRouter(routes), provideProtractorTestingSupport()],
