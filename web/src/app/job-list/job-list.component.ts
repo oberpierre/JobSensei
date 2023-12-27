@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NbCardModule, NbListModule } from '@nebular/theme';
 import { JobCardComponent } from '../job-card/job-card.component';
 import { Job } from '../job';
+import { JobsService } from '../jobs.service';
 
 @Component({
   selector: 'app-job-list',
@@ -17,13 +18,15 @@ import { Job } from '../job';
   styleUrl: './job-list.component.css'
 })
 export class JobListComponent {
-  jobs: Job[] = [{
-    uuid: "1",
-    title: "Software Engineer, Machine Learning",
-    summary: "Google is seeking a Software Engineer to develop the next-generation technologies that change how billions of users connect, explore, and interact with information and one another. The ideal candidate will have experience in software development, data structures or algorithms, ML algorithms/tools (e.g., TensorFlow), AI, deep learning, or natural language processing.",
-  }, {
-    uuid: "2",
-    title: "Student Researcher",
-    summary: "Google is looking for a Student Researcher to work on critical research projects and collaborate with Google's research scientists and engineers.",
-  }]
+  jobs: Job[] = [];
+
+  constructor(private jobsService: JobsService) {}
+
+  ngOnInit(): void {
+    this.initJobs();
+  }
+
+  initJobs(): void {
+    this.jobs = this.jobsService.getJobs(); 
+  }
 }
