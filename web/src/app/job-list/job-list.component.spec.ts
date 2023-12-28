@@ -6,17 +6,18 @@ import { NbStatusService } from '@nebular/theme';
 import { JobCardComponent } from '../job-card/job-card.component';
 import { Job } from '../job';
 import { JobsService } from '../jobs.service';
+import { Observable, of } from 'rxjs';
 
 class MockNbStatusService {
   isCustomStatus = () => false;
 }
 
 class MockJobsService {
-  getJobs(): Job[] {
-    return [
+  getJobs(): Observable<Job[]> {
+    return of([
       {uuid: '1', title: 'foo', summary: 'bar'},
       {uuid: '2', title: 'fizzbuzz'}
-    ];
+    ]);
   }
 }
 

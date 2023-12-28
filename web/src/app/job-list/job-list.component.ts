@@ -27,6 +27,6 @@ export class JobListComponent {
   }
 
   initJobs(): void {
-    this.jobs = this.jobsService.getJobs(); 
+    this.jobsService.getJobs().subscribe((jobs) => this.jobs = jobs); 
   }
 }

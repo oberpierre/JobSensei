@@ -15,10 +15,11 @@ describe('JobsService', () => {
   });
 
   describe('getJobs', () => {
-    it('should return a list of jobs', () => {
-      const actual = service.getJobs();
-
-      expect(actual).toHaveSize(2);
+    it('should return a list of jobs', (done) => {
+      service.getJobs().subscribe((jobs) => {
+        expect(jobs).toHaveSize(2);
+        done();
+      });
     })
   })
 });
