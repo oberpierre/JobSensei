@@ -1,4 +1,6 @@
-<nb-card>
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="error">An error ocurred!</div>
+<nb-card *ngIf="jobs">
     <nb-list>
         <ng-container *ngFor="let job of jobs" ngProjectAs="nb-list-item">
             <app-job-card [job]="job" />
