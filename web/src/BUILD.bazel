@@ -40,8 +40,11 @@ ng_application(
         "//web:node_modules/@nebular/eva-icons",
         "//web:node_modules/eva-icons",
         "//web:node_modules/normalize.css",
+        "//web:node_modules/@apollo/client",
+        "//web:node_modules/apollo-angular",
+        "//web:node_modules/graphql",
     ],
-        html_assets = [
+    html_assets = [
         ":normalize.css",
         ":nebular.css",
         "styles.css",
