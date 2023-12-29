@@ -5,7 +5,7 @@ import { JobCardComponent } from '../job-card/job-card.component';
 import { Job } from '../job';
 import { Apollo, gql } from 'apollo-angular';
 
-const GET_JOBS = gql`
+export const GET_JOBS = gql`
   query GetJobs {
     jobs {
       uuid

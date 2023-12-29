@@ -1,36 +1,25 @@
 import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ApolloTestingController, ApolloTestingModule } from 'apollo-angular/testing';
 
-import { JobListComponent } from './job-list.component';
+import { GET_JOBS, JobListComponent } from './job-list.component';
 import { NbStatusService } from '@nebular/theme';
 import { JobCardComponent } from '../job-card/job-card.component';
-import { Job } from '../job';
-import { JobsService } from '../jobs.service';
-import { Observable, of } from 'rxjs';
 
 class MockNbStatusService {
   isCustomStatus = () => false;
 }
 
-class MockJobsService {
-  getJobs(): Observable<Job[]> {
-    return of([
-      {uuid: '1', title: 'foo', summary: 'bar'},
-      {uuid: '2', title: 'fizzbuzz'}
-    ]);
-  }
-}
-
 describe('JobListComponent', () => {
   let component: JobListComponent;
   let fixture: ComponentFixture<JobListComponent>;
+  let controller: ApolloTestingController;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(waitForAsync(() =>
     TestBed.configureTestingModule({
-      imports: [JobListComponent],
+      imports: [ApolloTestingModule, JobListComponent],
       providers: [
         {provide: NbStatusService, useClass: MockNbStatusService},
-        {provide: JobsService, useClass: MockJobsService},
       ]
     })
     .compileComponents()
@@ -38,20 +27,52 @@ describe('JobListComponent', () => {
       fixture = TestBed.createComponent(JobListComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
-    });
-  }));
 
-  it('should create', () => {
+      controller = TestBed.inject(ApolloTestingController);
+    })
+  ));
+
+  afterEach(() => {
+    controller.verify();
+  });
+
+  it('should create JobList component', async () => {
+    const op = controller.expectOne(GET_JOBS);
+    op.flush({
+      data: {
+        jobs: []
+      },
+    });
+
+    await fixture.whenStable();
+
     expect(component).toBeTruthy();
   });
 
-  it('should create cards for fetched jobs', async () => {
+  it('should show loading and create cards for fetched jobs', async () => {
+    const op = controller.expectOne(GET_JOBS);
+    op.flush({
+      data: {
+        jobs: [
+          {uuid: '1', title: 'foo'},
+          {uuid: '2', title: 'fizzbuzz'}
+        ]
+      },
+    });
+
     await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toBe("Loading...");
+    
+    fixture.detectChanges();
+    await fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).not.toBe("Loading...");
 
     const cards = fixture.debugElement.queryAll(By.directive(JobCardComponent));
     const jobs = cards.map((card) => card.componentInstance.job);
     expect(jobs.length).toBe(2);
-    expect(jobs[0]).toEqual({uuid: '1', title: 'foo', summary: 'bar'});
+    expect(jobs[0]).toEqual({uuid: '1', title: 'foo'});
     expect(jobs[1]).toEqual({uuid: '2', title: 'fizzbuzz'});
   });
 });
