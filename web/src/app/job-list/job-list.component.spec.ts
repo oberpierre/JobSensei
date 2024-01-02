@@ -54,8 +54,8 @@ describe('JobListComponent', () => {
     op.flush({
       data: {
         jobs: [
-          {uuid: '1', title: 'foo'},
-          {uuid: '2', title: 'fizzbuzz'}
+          {uuid: '1', title: 'foo', summary: 'foobar'},
+          {uuid: '2', title: 'fizzbuzz', summary: null}
         ]
       },
     });
@@ -72,7 +72,7 @@ describe('JobListComponent', () => {
     const cards = fixture.debugElement.queryAll(By.directive(JobCardComponent));
     const jobs = cards.map((card) => card.componentInstance.job);
     expect(jobs.length).toBe(2);
-    expect(jobs[0]).toEqual({uuid: '1', title: 'foo'});
-    expect(jobs[1]).toEqual({uuid: '2', title: 'fizzbuzz'});
+    expect(jobs[0]).toEqual({uuid: '1', title: 'foo', summary: 'foobar'});
+    expect(jobs[1]).toEqual({uuid: '2', title: 'fizzbuzz', summary: null});
   });
 });

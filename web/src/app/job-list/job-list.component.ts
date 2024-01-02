@@ -10,6 +10,7 @@ export const GET_JOBS = gql`
     jobs {
       uuid
       title
+      summary
     }
   }
 `;

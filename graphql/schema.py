@@ -15,12 +15,19 @@ client = MongoClient(conn_str)
 class Job(ObjectType):
     uuid = String()
     title = String()
+    summary = String()
 
 class Query(ObjectType):
     jobs = List(Job)
 
     def resolve_jobs(root, info):
         jobs = client.jobsensei.listings_categorized.find()
-        return [Job(uuid=job['uuid'], title=job['jobTitle']) for job in jobs]
+        return [
+            Job(
+                uuid=job.get('uuid', None),
+                title=job.get('jobTitle', None),
+                summary=job.get('summary', None)
+            ) for job in jobs
+        ]
 
 schema = Schema(query=Query)
