@@ -1,5 +1,6 @@
 import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { RouterTestingModule } from "@angular/router/testing";
 import { ApolloTestingController, ApolloTestingModule } from 'apollo-angular/testing';
 
 import { GET_JOBS, JobListComponent } from './job-list.component';
@@ -17,7 +18,7 @@ describe('JobListComponent', () => {
 
   beforeEach(waitForAsync(() =>
     TestBed.configureTestingModule({
-      imports: [ApolloTestingModule, JobListComponent],
+      imports: [RouterTestingModule, ApolloTestingModule, JobListComponent],
       providers: [
         {provide: NbStatusService, useClass: MockNbStatusService},
       ]

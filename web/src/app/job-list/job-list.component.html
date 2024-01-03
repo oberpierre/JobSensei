@@ -3,7 +3,9 @@
 <nb-card *ngIf="jobs">
     <nb-list>
         <ng-container *ngFor="let job of jobs" ngProjectAs="nb-list-item">
-            <app-job-card [job]="job" />
+            <a [routerLink]="['/job', job.uuid]">
+                <app-job-card [job]="job" />
+            </a>
         </ng-container>
     </nb-list>
 </nb-card>

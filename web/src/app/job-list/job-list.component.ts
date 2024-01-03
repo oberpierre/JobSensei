@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NbCardModule, NbListModule } from '@nebular/theme';
 import { JobCardComponent } from '../job-card/job-card.component';
@@ -19,6 +20,7 @@ export const GET_JOBS = gql`
   selector: 'app-job-list',
   standalone: true,
   imports: [
+    RouterModule,
     CommonModule,
     NbCardModule,
     NbListModule,
