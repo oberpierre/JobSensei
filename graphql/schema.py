@@ -17,17 +17,27 @@ class Job(ObjectType):
     title = String()
     summary = String()
 
+def map_job(dict):
+    return Job(
+        uuid=dict.get('uuid', None),
+        title=dict.get('jobTitle', None),
+        summary=dict.get('summary', None)
+    )
+
 class Query(ObjectType):
     jobs = List(Job)
+    job = Field(Job, uuid=String(required=True))
 
-    def resolve_jobs(root, info):
+    def resolve_jobs(parent, info):
         jobs = client.jobsensei.listings_categorized.find()
         return [
-            Job(
-                uuid=job.get('uuid', None),
-                title=job.get('jobTitle', None),
-                summary=job.get('summary', None)
-            ) for job in jobs
+            map_job(job) for job in jobs
         ]
+    
+    def resolve_job(parent, info, uuid):
+        job = client.jobsensei.listings_categorized.find_one({"uuid": uuid})
+        if job:
+            return map_job(job)
+        return None
 
 schema = Schema(query=Query)
