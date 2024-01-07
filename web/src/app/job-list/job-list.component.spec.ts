@@ -2,9 +2,9 @@ import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from "@angular/router/testing";
 import { ApolloTestingController, ApolloTestingModule } from 'apollo-angular/testing';
+import { NbStatusService } from '@nebular/theme';
 
 import { GET_JOBS, JobListComponent } from './job-list.component';
-import { NbStatusService } from '@nebular/theme';
 import { JobCardComponent } from '../job-card/job-card.component';
 
 class MockNbStatusService {
@@ -66,7 +66,6 @@ describe('JobListComponent', () => {
     expect(fixture.nativeElement.textContent).toBe("Loading...");
     
     fixture.detectChanges();
-    await fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).not.toBe("Loading...");
 
