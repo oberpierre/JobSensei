@@ -1,1 +1,4 @@
-<p>job works! id: {{ jobId$ | async }}</p>
+<div *ngIf="loading">Loading...</div>
+<nb-card *ngIf="!loading">
+    <h1>{{ job?.title }}</h1>
+</nb-card>
