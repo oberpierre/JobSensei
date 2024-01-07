@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { NbCardModule } from '@nebular/theme';
+import { NbCardModule, NbSpinnerModule } from '@nebular/theme';
 import { Apollo, gql } from 'apollo-angular';
 import { Job } from '../job';
 
@@ -18,7 +18,7 @@ export const GET_JOB = gql`
 @Component({
   selector: 'app-job',
   standalone: true,
-  imports: [NbCardModule, CommonModule],
+  imports: [NbCardModule, NbSpinnerModule, CommonModule],
   templateUrl: './job.component.html',
   styleUrl: './job.component.css'
 })

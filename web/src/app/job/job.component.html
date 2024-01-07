@@ -1,4 +1,3 @@
-<div *ngIf="loading">Loading...</div>
-<nb-card *ngIf="!loading">
+<nb-card [nbSpinner]="loading">
     <h1>{{ job?.title }}</h1>
 </nb-card>

@@ -1,9 +1,10 @@
+import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
 import { ApolloTestingController, ApolloTestingModule } from 'apollo-angular/testing';
-import { NbStatusService } from '@nebular/theme';
+import { NbStatusService, NbSpinnerComponent } from '@nebular/theme';
 
 import { JobComponent, GET_JOB } from './job.component';
 
@@ -60,10 +61,11 @@ describe('JobComponent', () => {
     await fixture.whenStable();
 
     expect(op.operation.variables['uuid']).toBe('a0c1fe12-cec2-442a-9329-2cb47f761303');
-    expect(fixture.nativeElement.textContent).toBe("Loading...");
+    expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeTruthy();
 
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foobar')
+    expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeFalsy();
   })
 });
