@@ -1,11 +1,8 @@
 import { Routes } from '@angular/router';
-import { JobListComponent } from './job-list/job-list.component';
-import { JobComponent } from './job/job.component';
-import { NotFoundComponent } from './not-found/not-found.component';
 
 export const routes: Routes = [
-    {path: 'jobs', component: JobListComponent},
-    {path: 'job/:id', component: JobComponent},
+    {path: 'jobs', loadComponent: () => import('./job-list/job-list.component').then(mod => mod.JobListComponent)},
+    {path: 'job/:id', loadComponent: () => import('./job/job.component').then(mod => mod.JobComponent)},
     {path: '', redirectTo: '/jobs', pathMatch: 'full'},
-    {path: '**', component: NotFoundComponent}
+    {path: '**', loadComponent: () => import('./not-found/not-found.component').then(mod => mod.NotFoundComponent)}
 ];
