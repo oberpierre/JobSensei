@@ -12,16 +12,34 @@ conn_str = 'mongodb://%s:%s@%s/%s' % (quote_plus(user), quote_plus(password), qu
 
 client = MongoClient(conn_str)
 
+class Location(ObjectType):
+    city = String()
+    country = String()
+
+class Qualifications(ObjectType):
+    required = List(String)
+    preferred = List(String)
+
 class Job(ObjectType):
     uuid = String()
     title = String()
     summary = String()
+    url = String()
+    locations = List(Location)
+    skills = List(String)
+    responsibilities = List(String)
+    qualifications = Field(Qualifications)
 
 def map_job(dict):
     return Job(
         uuid=dict.get('uuid', None),
         title=dict.get('jobTitle', None),
-        summary=dict.get('summary', None)
+        summary=dict.get('summary', None),
+        url=dict.get('url', None),
+        locations=dict.get('location', None),
+        skills=dict.get('skills', None),
+        responsibilities=dict.get('responsibilities', None),
+        qualifications=dict.get('qualifications', None),
     )
 
 class Query(ObjectType):
