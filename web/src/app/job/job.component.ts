@@ -11,6 +11,18 @@ export const GET_JOB = gql`
   query GetJob($uuid: String!) {
     job(uuid: $uuid) {
       title
+      summary
+      url
+      locations {
+        city
+        country
+      }
+      skills
+      responsibilities
+      qualifications {
+        required
+        preferred
+      }
     }
   }
 `;
