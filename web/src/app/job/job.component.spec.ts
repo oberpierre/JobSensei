@@ -79,7 +79,41 @@ describe('JobComponent', () => {
 
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('h2')?.textContent).toBe('foobar')
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('h2')?.textContent).toBe('foobar')
     expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeFalsy();
+    const sectionHeaders = element.querySelectorAll('h3');
+    expect(sectionHeaders.length).toBe(0);
+  });
+
+  it('should show skills and responsibilities sections if available', async () => {
+    const op = controller.expectOne(GET_JOB);
+    op.flush({
+      data: {
+        job: {
+          title: 'Software Engineer',
+          summary: null,
+          url: null,
+          locations: null,
+          skills: ['Development', 'Testing'],
+          responsibilities: ['Write product or system development code', 'Participate in, or lead design reviews'],
+          qualifications: null,
+        },
+      },
+    });
+
+    await fixture.whenStable();
+
+    expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeTruthy();
+
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('h2')?.textContent).toBe('Software Engineer')
+    expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeFalsy();
+    const sectionHeaders = Array.from(element.querySelectorAll('h3')).map((heading: HTMLHeadingElement) => heading.textContent);
+    expect(sectionHeaders.length).toBe(2);
+    expect(sectionHeaders).toContain('Skills');
+    expect(sectionHeaders).toContain('Responsibilities');
   })
 });
