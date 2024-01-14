@@ -34,14 +34,18 @@
         </section>
         <section *ngIf="job?.qualifications">
             <h3>Qualifications</h3>
-            <h4>Basic</h4>
-            <ul>
-                <li *ngFor="let basicQualification of job?.qualifications?.required">{{ basicQualification }}</li>
-            </ul>
-            <h4>Preferred</h4>
-            <ul>
-                <li *ngFor="let preferredQualification of job?.qualifications?.preferred">{{ preferredQualification }}</li>
-            </ul>
+            <section *ngIf="job?.qualifications?.required">
+                <h4>Basic</h4>
+                <ul>
+                    <li *ngFor="let basicQualification of job?.qualifications?.required">{{ basicQualification }}</li>
+                </ul>
+            </section>
+            <section *ngIf="job?.qualifications?.preferred">
+                <h4>Preferred</h4>
+                <ul>
+                    <li *ngFor="let preferredQualification of job?.qualifications?.preferred">{{ preferredQualification }}</li>
+                </ul>
+            </section>
         </section>
     </nb-card-body>
 </nb-card>

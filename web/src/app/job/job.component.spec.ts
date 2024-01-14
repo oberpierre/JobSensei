@@ -115,5 +115,120 @@ describe('JobComponent', () => {
     expect(sectionHeaders.length).toBe(2);
     expect(sectionHeaders).toContain('Skills');
     expect(sectionHeaders).toContain('Responsibilities');
-  })
+  });
+
+  it('should show only required qualifications if preferred are not available', async () => {
+    const op = controller.expectOne(GET_JOB);
+    op.flush({
+      data: {
+        job: {
+          title: 'Required Qualifications',
+          summary: null,
+          url: null,
+          locations: null,
+          skills: null,
+          responsibilities: null,
+          qualifications: {
+            required: ['Bachelores', '2 years of experience'],
+            preferred: null,
+          },
+        },
+      },
+    });
+
+    await fixture.whenStable();
+
+    expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeTruthy();
+
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('h2')?.textContent).toBe('Required Qualifications')
+    expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeFalsy();
+
+    const sectionHeaders = element.querySelectorAll('h3');
+    expect(sectionHeaders.length).toBe(1);
+    expect(sectionHeaders?.[0]?.textContent).toBe('Qualifications');
+
+    const subsectionHeaders = Array.from(sectionHeaders?.[0]?.parentElement?.querySelectorAll('h4') ?? []).map((heading: HTMLHeadingElement) => heading.textContent);
+    expect(subsectionHeaders.length).toBe(1);
+    expect(subsectionHeaders).toContain('Basic');
+  });
+
+  it('should show only preferred qualifications if required are not available', async () => {
+    const op = controller.expectOne(GET_JOB);
+    op.flush({
+      data: {
+        job: {
+          title: 'Preferred Qualifications',
+          summary: null,
+          url: null,
+          locations: null,
+          skills: null,
+          responsibilities: null,
+          qualifications: {
+            required: null,
+            preferred: ['Masters', '100 years of experience'],
+          },
+        },
+      },
+    });
+
+    await fixture.whenStable();
+
+    expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeTruthy();
+
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('h2')?.textContent).toBe('Preferred Qualifications')
+    expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeFalsy();
+
+    const sectionHeaders = element.querySelectorAll('h3');
+    expect(sectionHeaders.length).toBe(1);
+    expect(sectionHeaders?.[0]?.textContent).toBe('Qualifications');
+
+    const subsectionHeaders = Array.from(sectionHeaders?.[0]?.parentElement?.querySelectorAll('h4') ?? []).map((heading: HTMLHeadingElement) => heading.textContent);
+    expect(subsectionHeaders.length).toBe(1);
+    expect(subsectionHeaders).toContain('Preferred');
+  });
+
+  it('should show preferred and required qualifications if available', async () => {
+    const op = controller.expectOne(GET_JOB);
+    op.flush({
+      data: {
+        job: {
+          title: 'Qualifications',
+          summary: null,
+          url: null,
+          locations: null,
+          skills: null,
+          responsibilities: null,
+          qualifications: {
+            required: ['Bachelores', '2 years of experience'],
+            preferred: ['Masters', '100 years of experience'],
+          },
+        },
+      },
+    });
+
+    await fixture.whenStable();
+
+    expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeTruthy();
+
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('h2')?.textContent).toBe('Qualifications')
+    expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeFalsy();
+
+    const sectionHeaders = element.querySelectorAll('h3');
+    expect(sectionHeaders.length).toBe(1);
+    expect(sectionHeaders?.[0]?.textContent).toBe('Qualifications');
+
+    const subsectionHeaders = Array.from(sectionHeaders?.[0]?.parentElement?.querySelectorAll('h4') ?? []).map((heading: HTMLHeadingElement) => heading.textContent);
+    expect(subsectionHeaders.length).toBe(2);
+    expect(subsectionHeaders).toContain('Basic');
+    expect(subsectionHeaders).toContain('Preferred');
+  });
 });
