@@ -1,3 +1,47 @@
 <nb-card [nbSpinner]="loading">
-    <h1>{{ job?.title }}</h1>
+    <nb-card-header>
+        <header>
+            <span>
+                <h2>{{ job?.title }}</h2>
+                <ul class="nb-tag-list">
+                    <li *ngFor="let location of job?.locations">
+                        <nb-tag
+                            removable="false"
+                            size="tiny"
+                            appearance="outline"
+                            [text]="[location?.city, location?.country].join(', ')" />
+                    </li>
+                </ul>
+            </span>
+            <span *ngIf="job?.url">
+                <a [href]="job?.url" target="_blank" nbButton hero status="primary"><nb-icon icon="external-link-outline"/>Apply</a>
+            </span>
+        </header>
+    </nb-card-header>
+    <nb-card-body>
+        <section>{{ job?.summary }}</section>
+        <section>
+            <h3>Skills</h3>
+            <ul>
+                <li *ngFor="let skill of job?.skills">{{ skill }}</li>
+            </ul>
+        </section>
+        <section>
+            <h3>Responsibilities</h3>
+            <ul>
+                <li *ngFor="let responsibilities of job?.responsibilities">{{ responsibilities }}</li>
+            </ul>
+        </section>
+        <section>
+            <h3>Qualifications</h3>
+            <h4>Basic</h4>
+            <ul>
+                <li *ngFor="let basicQualification of job?.qualifications?.required">{{ basicQualification }}</li>
+            </ul>
+            <h4>Preferred</h4>
+            <ul>
+                <li *ngFor="let preferredQualification of job?.qualifications?.preferred">{{ preferredQualification }}</li>
+            </ul>
+        </section>
+    </nb-card-body>
 </nb-card>

@@ -1,26 +1,34 @@
 import { By } from '@angular/platform-browser';
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
 import { ApolloTestingController, ApolloTestingModule } from 'apollo-angular/testing';
-import { NbStatusService, NbSpinnerComponent } from '@nebular/theme';
+import { NbFocusMonitor, NbStatusService, NbSpinnerComponent, NbTagListComponent } from '@nebular/theme';
 
 import { JobComponent, GET_JOB } from './job.component';
 
 class MockNbStatusService {
   isCustomStatus = () => false;
 }
+class MockNbFocusMonitor {}
+@Component({standalone: true, selector: 'nb-tag-list', template: ''})
+class MockNbTagListComponent {}
 describe('JobComponent', () => {
   let component: JobComponent;
   let fixture: ComponentFixture<JobComponent>;
   let controller: ApolloTestingController;
 
   beforeEach(async () => {
+    const nbActiveDescendantKeyManagerFactoryService = jasmine.createSpyObj('NbActiveDescendantKeyManagerFactoryService', ['']);
+
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ApolloTestingModule, JobComponent],
+      imports: [RouterTestingModule, ApolloTestingModule, MockNbTagListComponent, JobComponent],
       providers: [
         {provide: NbStatusService, useClass: MockNbStatusService},
+        {provide: NbFocusMonitor, useClass: MockNbFocusMonitor},
+        {provide: 'NbActiveDescendantKeyManagerFactoryService', useValue: nbActiveDescendantKeyManagerFactoryService},
         {
           provide: ActivatedRoute,
           useValue: {
@@ -53,7 +61,13 @@ describe('JobComponent', () => {
     op.flush({
       data: {
         job: {
-          title: 'foobar'
+          title: 'foobar',
+          summary: null,
+          url: null,
+          locations: null,
+          skills: null,
+          responsibilities: null,
+          qualifications: null,
         },
       },
     });
@@ -65,7 +79,7 @@ describe('JobComponent', () => {
 
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toBe('foobar')
+    expect(fixture.nativeElement.querySelector('h2')?.textContent).toBe('foobar')
     expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeFalsy();
   })
 });
