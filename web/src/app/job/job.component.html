@@ -2,6 +2,7 @@
     <nb-card-header>
         <header>
             <span>
+                <a class="back" href="#" (click)="goBack()"><nb-icon icon="arrow-ios-back-outline" />Back to Overview</a>
                 <h2>{{ job?.title }}</h2>
                 <ul class="nb-tag-list">
                     <li *ngFor="let location of job?.locations">

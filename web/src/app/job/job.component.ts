@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -46,7 +46,7 @@ export class JobComponent {
   loading: boolean = true;
   error: any;
 
-  constructor(private route: ActivatedRoute, private apollo: Apollo) {}
+  constructor(private route: ActivatedRoute, private apollo: Apollo, private location: Location) {}
 
   ngOnInit() {
     this.route.paramMap.pipe(
@@ -68,5 +68,9 @@ export class JobComponent {
           this.error = error;
         });
     });
+  }
+
+  goBack() {
+    this.location.back();
   }
 }

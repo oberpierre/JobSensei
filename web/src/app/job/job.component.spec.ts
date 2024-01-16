@@ -1,11 +1,13 @@
 import { By } from '@angular/platform-browser';
+import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
 import { ApolloTestingController, ApolloTestingModule } from 'apollo-angular/testing';
-import { NbFocusMonitor, NbStatusService, NbSpinnerComponent, NbTagListComponent } from '@nebular/theme';
+import { NbFocusMonitor, NbStatusService, NbSpinnerComponent } from '@nebular/theme';
+import { NbEvaIconsModule } from '@nebular/eva-icons';
 
 import { JobComponent, GET_JOB } from './job.component';
 
@@ -15,20 +17,24 @@ class MockNbStatusService {
 class MockNbFocusMonitor {}
 @Component({standalone: true, selector: 'nb-tag-list', template: ''})
 class MockNbTagListComponent {}
+
 describe('JobComponent', () => {
   let component: JobComponent;
   let fixture: ComponentFixture<JobComponent>;
   let controller: ApolloTestingController;
+  let locationSpy: Location;
 
   beforeEach(async () => {
+    locationSpy = jasmine.createSpyObj('Location', ['back']);
     const nbActiveDescendantKeyManagerFactoryService = jasmine.createSpyObj('NbActiveDescendantKeyManagerFactoryService', ['']);
 
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ApolloTestingModule, MockNbTagListComponent, JobComponent],
+      imports: [RouterTestingModule, ApolloTestingModule, NbEvaIconsModule, MockNbTagListComponent, JobComponent],
       providers: [
         {provide: NbStatusService, useClass: MockNbStatusService},
         {provide: NbFocusMonitor, useClass: MockNbFocusMonitor},
         {provide: 'NbActiveDescendantKeyManagerFactoryService', useValue: nbActiveDescendantKeyManagerFactoryService},
+        {provide: Location, useValue: locationSpy},
         {
           provide: ActivatedRoute,
           useValue: {
@@ -80,11 +86,34 @@ describe('JobComponent', () => {
     fixture.detectChanges();
 
     const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('.back')?.textContent).toBe('Back to Overview');
     expect(element.querySelector('h2')?.textContent).toBe('foobar')
     expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeFalsy();
     const sectionHeaders = element.querySelectorAll('h3');
     expect(sectionHeaders.length).toBe(0);
   });
+
+  it('should fetch job and display details', async () => {
+    const op = controller.expectOne(GET_JOB);
+    op.flush({
+      data: {
+        job: null,
+      },
+    });
+
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    const backButton: HTMLAnchorElement | null = element.querySelector('a.back');
+    
+    expect(locationSpy.back).not.toHaveBeenCalled();
+    backButton?.click();
+    
+    expect(element.querySelector('.back')?.textContent).toBe('Back to Overview');
+    expect(locationSpy.back).toHaveBeenCalledTimes(1);
+  });
+
 
   it('should show skills and responsibilities sections if available', async () => {
     const op = controller.expectOne(GET_JOB);
