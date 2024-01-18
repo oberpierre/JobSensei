@@ -1,11 +1,6 @@
-import { By } from '@angular/platform-browser';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NotFoundComponent } from './not-found.component';
-
-class MockNbStatusService {
-  isCustomStatus = () => false;
-}
 
 describe('NotFoundComponent', () => {
   let component: NotFoundComponent;
@@ -23,7 +18,7 @@ describe('NotFoundComponent', () => {
     });
   });
 
-  it('should create', () => {
+  it('should create NotFound component', () => {
     expect(component).toBeTruthy();
   });
 
