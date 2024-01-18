@@ -74,6 +74,8 @@ describe('JobComponent', () => {
           skills: null,
           responsibilities: null,
           qualifications: null,
+          createdOn: '2024-01-18T09:00:00',
+          deletedOn: '2024-01-18T21:00:00',
         },
       },
     });
@@ -91,9 +93,17 @@ describe('JobComponent', () => {
     expect(fixture.debugElement.query(By.directive(NbSpinnerComponent))).toBeFalsy();
     const sectionHeaders = element.querySelectorAll('h3');
     expect(sectionHeaders.length).toBe(0);
+
+    const metaDataList = element.querySelector('dl');
+    const pairs: [string, string][] = (Array.from(metaDataList?.querySelectorAll('dt') ?? []) as HTMLDListElement[]).reduce((acc, curr) => {
+      return [...acc, [curr.textContent ?? '', curr.nextSibling?.textContent ?? '']];
+    }, [] as [string, string][]);
+    expect(pairs.length).toBe(2);
+    expect(pairs).toContain(['Listing date', '2024-01-18T09:00:00']);
+    expect(pairs).toContain(['Inactivation date', '2024-01-18T21:00:00']);
   });
 
-  it('should fetch job and display details', async () => {
+  it('should show back to overview button triggering history back', async () => {
     const op = controller.expectOne(GET_JOB);
     op.flush({
       data: {
@@ -127,6 +137,8 @@ describe('JobComponent', () => {
           skills: ['Development', 'Testing'],
           responsibilities: ['Write product or system development code', 'Participate in, or lead design reviews'],
           qualifications: null,
+          createdOn: null,
+          deletedOn: null,
         },
       },
     });
@@ -161,6 +173,8 @@ describe('JobComponent', () => {
             required: ['Bachelores', '2 years of experience'],
             preferred: null,
           },
+          createdOn: null,
+          deletedOn: null,
         },
       },
     });
@@ -199,6 +213,8 @@ describe('JobComponent', () => {
             required: null,
             preferred: ['Masters', '100 years of experience'],
           },
+          createdOn: null,
+          deletedOn: null,
         },
       },
     });
@@ -237,6 +253,8 @@ describe('JobComponent', () => {
             required: ['Bachelores', '2 years of experience'],
             preferred: ['Masters', '100 years of experience'],
           },
+          createdOn: null,
+          deletedOn: null,
         },
       },
     });

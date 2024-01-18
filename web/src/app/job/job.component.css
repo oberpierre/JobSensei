@@ -24,3 +24,21 @@ header {
 .back:hover {
     color: inherit;
 }
+
+dl {
+    display: grid;
+    grid-template-columns: [label] auto [value] 1fr;
+    column-gap: 8px;
+}
+
+dt {
+    grid-column: label;
+}
+dt::after {
+    content: ':';
+}
+
+dd {
+    grid-column: value;
+    margin: 0;
+}

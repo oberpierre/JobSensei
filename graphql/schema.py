@@ -29,6 +29,8 @@ class Job(ObjectType):
     skills = List(String)
     responsibilities = List(String)
     qualifications = Field(Qualifications)
+    created_on = String()
+    deleted_on = String()
 
 def map_job(dict):
     return Job(
@@ -40,6 +42,8 @@ def map_job(dict):
         skills=dict.get('skills', None),
         responsibilities=dict.get('responsibilities', None),
         qualifications=dict.get('qualifications', None),
+        created_on=dict.get('createdOn', None),
+        deleted_on=dict.get('deletedOn', None),
     )
 
 class Query(ObjectType):

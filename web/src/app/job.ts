@@ -12,5 +12,7 @@ export interface Job {
     qualifications?: {
         required?: string[];
         preferred?: string[];
-    }
+    };
+    createdOn?: string;
+    deletedOn?: string;
 }

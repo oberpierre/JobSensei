@@ -49,4 +49,14 @@
             </section>
         </section>
     </nb-card-body>
+    <nb-card-footer>
+        <dl>
+            <ng-container *ngIf="job?.createdOn">
+                <dt>Listing date</dt><dd>{{ job?.createdOn }}</dd>
+            </ng-container>
+            <ng-container *ngIf="job?.deletedOn">
+                <dt>Inactivation date</dt><dd>{{ job?.deletedOn }}</dd>
+            </ng-container>
+        </dl>
+    </nb-card-footer>
 </nb-card>

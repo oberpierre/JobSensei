@@ -23,6 +23,8 @@ export const GET_JOB = gql`
         required
         preferred
       }
+      createdOn
+      deletedOn
     }
   }
 `;
