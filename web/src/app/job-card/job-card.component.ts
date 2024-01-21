@@ -1,12 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbListModule } from '@nebular/theme';
+import { NbBadgeModule, NbListModule } from '@nebular/theme';
 import { Job } from '../job';
 
 @Component({
   selector: 'app-job-card',
   standalone: true,
   imports: [
+    NbBadgeModule,
     NbListModule,
     CommonModule,
   ],

@@ -12,6 +12,7 @@ export const GET_JOBS = gql`
       uuid
       title
       summary
+      deletedOn
     }
   }
 `;

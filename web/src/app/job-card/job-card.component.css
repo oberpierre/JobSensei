@@ -1,4 +1,6 @@
 nb-list-item {
+    /* position needed for nb-badge positioning to work */
+    position: relative;
     display: grid;
     grid-template-areas:
         "title"
