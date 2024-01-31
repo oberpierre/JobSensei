@@ -22,7 +22,7 @@ import { routes } from './app.routes';
     HttpClientModule,
     RouterOutlet,
     BrowserModule,
-    RouterModule.forRoot([]),
+    RouterModule.forRoot(routes),
     NbThemeModule.forRoot({ name: 'dark'}),
     NbLayoutModule,
     NbEvaIconsModule,
