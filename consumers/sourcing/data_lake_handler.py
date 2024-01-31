@@ -2,7 +2,7 @@ import logging
 from pymongo import MongoClient
 from pymongo.errors import BulkWriteError, ConnectionFailure, OperationFailure
 from urllib.parse import quote_plus
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import uuid4
 
 logger = logging.getLogger(__name__)
@@ -29,10 +29,10 @@ class DataLakeHandler:
             return 'mongodb://%s:%s@%s/%s' % (quote_plus(user), quote_plus(password), quote_plus(server), quote_plus(db))
         return 'mongodb://%s/%s' % (quote_plus(server), quote_plus(db))
 
-    def _get_iso_timestamp(self):
+    def _get_timestamp(self):
         """Returns the current time in ISO format."""
 
-        return datetime.now().isoformat()
+        return datetime.now(tz=timezone.utc)
 
     def get_all_active_listings(self): 
         """Fetches all active listings from the `listings_raw` collection."""
@@ -43,7 +43,7 @@ class DataLakeHandler:
         """Inserts a new listing record into the `listings_raw` collection."""
         uuid = str(uuid4())
 
-        record['createdOn'] = self._get_iso_timestamp()
+        record['createdOn'] = self._get_timestamp()
         record['uuid'] = uuid
         try:
             self.listings_raw.insert_one(record)
@@ -56,7 +56,7 @@ class DataLakeHandler:
     def inactivate_listings(self, urls):
         """Marks listings with the given urls as inactive within the data lake."""
 
-        inactivate_timestamp = self._get_iso_timestamp()
+        inactivate_timestamp = self._get_timestamp()
         try:
             self.listings_raw.update_many({'url': {'$in': urls}}, {'$set': {'deletedOn': inactivate_timestamp}})
             self.listings_categorized.update_many({'url': {'$in': urls}}, {'$set': {'deletedOn': inactivate_timestamp}})

@@ -7,6 +7,7 @@ from data_lake_handler import DataLakeHandler
 from delta_processor import DeltaProcessor
 from topic import Topic
 from state import State
+from datetime import datetime
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -39,6 +40,11 @@ class Sourcing:
         """Maps a single record to required fields for delta processing."""
 
         return {'url': record['url'], 'reference': record['runId']}
+
+    def _json_serialize(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        raise TypeError("Object of type %s is not JSON serializable" % type(obj))
 
     def start_processing(self):
         """Starts consuming messages from Kafka, processes them, and handles accordingly based on their topic."""
@@ -121,7 +127,7 @@ class Sourcing:
         
         key = msg['uuid'] if 'uuid' in msg else msg['runId']
         try:
-            self.producer.produce(topic.value, key=key.encode('utf-8'), value=json.dumps(msg).encode('utf-8'))
+            self.producer.produce(topic.value, key=key.encode('utf-8'), value=json.dumps(msg, default=self._json_serialize).encode('utf-8'))
         except Exception as e:
             logger.error(f"Error: {str(e)}")
 
