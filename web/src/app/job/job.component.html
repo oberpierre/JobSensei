@@ -1,0 +1,62 @@
+<nb-card [nbSpinner]="loading">
+    <nb-card-header>
+        <header>
+            <span>
+                <a class="back" href="#" (click)="goBack()"><nb-icon icon="arrow-ios-back-outline" />Back to Overview</a>
+                <h2>{{ job?.title }}</h2>
+                <ul class="nb-tag-list">
+                    <li *ngFor="let location of job?.locations">
+                        <nb-tag
+                            removable="false"
+                            size="tiny"
+                            appearance="outline"
+                            [text]="[location?.city, location?.country].join(', ')" />
+                    </li>
+                </ul>
+            </span>
+            <span *ngIf="job?.url">
+                <a [href]="job?.url" target="_blank" nbButton hero status="primary"><nb-icon icon="external-link-outline"/>Apply</a>
+            </span>
+        </header>
+    </nb-card-header>
+    <nb-card-body>
+        <section>{{ job?.summary }}</section>
+        <section *ngIf="(job?.skills?.length ?? 0) > 0">
+            <h3>Skills</h3>
+            <ul>
+                <li *ngFor="let skill of job?.skills">{{ skill }}</li>
+            </ul>
+        </section>
+        <section *ngIf="(job?.responsibilities?.length ?? 0) > 0">
+            <h3>Responsibilities</h3>
+            <ul>
+                <li *ngFor="let responsibilities of job?.responsibilities">{{ responsibilities }}</li>
+            </ul>
+        </section>
+        <section *ngIf="job?.qualifications">
+            <h3>Qualifications</h3>
+            <section *ngIf="job?.qualifications?.required">
+                <h4>Basic</h4>
+                <ul>
+                    <li *ngFor="let basicQualification of job?.qualifications?.required">{{ basicQualification }}</li>
+                </ul>
+            </section>
+            <section *ngIf="job?.qualifications?.preferred">
+                <h4>Preferred</h4>
+                <ul>
+                    <li *ngFor="let preferredQualification of job?.qualifications?.preferred">{{ preferredQualification }}</li>
+                </ul>
+            </section>
+        </section>
+    </nb-card-body>
+    <nb-card-footer>
+        <dl>
+            <ng-container *ngIf="job?.createdOn">
+                <dt>Listing date</dt><dd>{{ job?.createdOn }}</dd>
+            </ng-container>
+            <ng-container *ngIf="job?.deletedOn">
+                <dt>Inactivation date</dt><dd>{{ job?.deletedOn }}</dd>
+            </ng-container>
+        </dl>
+    </nb-card-footer>
+</nb-card>

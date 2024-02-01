@@ -98,8 +98,9 @@ class Sourcing:
             self._send_message(Topic.SRC_NEW, record)
 
     def _create_listing(self, record):
-        self.data_lake.create_new_listing(record)
-        logger.info(f"Sending job listing to llm for ID {record['url']}")
+        uuid = self.data_lake.create_new_listing(record)
+        record[uuid] = uuid
+        logger.info(f"Job listing for URL {record['url']} has been created with UUID {record['uuid']}. Sending to LLM for categorization.")
         self._send_message(Topic.LLM_CATEGORIZE, {x:record[x] for x in record if x != '_id'})
 
     def _get_outdated_listings(self, record):
@@ -117,9 +118,10 @@ class Sourcing:
 
     def _send_message(self, topic, msg):
         """Sends the given message as JSON to a given Kafka topic."""
-
+        
+        key = msg['uuid'] if 'uuid' in msg else msg['runId']
         try:
-            self.producer.produce(topic.value, key=msg['runId'].encode('utf-8'), value=json.dumps(msg).encode('utf-8'))
+            self.producer.produce(topic.value, key=key.encode('utf-8'), value=json.dumps(msg).encode('utf-8'))
         except Exception as e:
             logger.error(f"Error: {str(e)}")
 

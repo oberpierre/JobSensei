@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from pymongo.errors import BulkWriteError, ConnectionFailure, OperationFailure
 from urllib.parse import quote_plus
 from datetime import datetime
+from uuid import uuid4
 
 logger = logging.getLogger(__name__)
 
@@ -40,17 +41,25 @@ class DataLakeHandler:
 
     def create_new_listing(self, record):
         """Inserts a new listing record into the `listings_raw` collection."""
+        uuid = str(uuid4())
 
         record['createdOn'] = self._get_iso_timestamp()
-        self.listings_raw.insert_one(record)
-        logger.info(f"New listing inserted with URL: {record['url']}")
+        record['uuid'] = uuid
+        try:
+            self.listings_raw.insert_one(record)
+            logger.info(f"New listing {uuid} inserted for listing with URL: {record['url']}")
+            return uuid
+        except e:
+            logger.rror(f"Failed to insert new listing for URL: {record['url']}. {e}")
+            raise e
 
     def inactivate_listings(self, urls):
         """Marks listings with the given urls as inactive within the data lake."""
 
+        inactivate_timestamp = self._get_iso_timestamp()
         try:
-            self.listings_raw.update_many({'url': {'$in': urls}}, {'$set': {'deletedOn': self._get_iso_timestamp()}})
-            self.listings_categorized.update_many({'url': {'$in': urls}}, {'$set': {'deletedOn': self._get_iso_timestamp()}})
+            self.listings_raw.update_many({'url': {'$in': urls}}, {'$set': {'deletedOn': inactivate_timestamp}})
+            self.listings_categorized.update_many({'url': {'$in': urls}}, {'$set': {'deletedOn': inactivate_timestamp}})
             logger.info(f"Listings inactivated. Count: {len(urls)}")
         except (OperationFailure, ConnectionFailure) as e:
             logger.error(f"Failed to inactivate listings. Error: {e}")
@@ -58,11 +67,11 @@ class DataLakeHandler:
     def insert_categorization(self, record):
         """Promotes a listing in our data lake from the bronze to the silver tier."""
         try:
-            url = record['url']
+            uuid = record['uuid']
             # Fetching the corresponding listing from the bronze tier
-            listing = self.listings_raw.find_one({'url': url})
+            listing = self.listings_raw.find_one({'uuid': uuid})
             if not listing:
-                logger.error(f"Listing with url {url} could not found in bronze tier!")
+                logger.error(f"Listing for ID {uuid} could not found in bronze tier!")
                 return
 
             # Removing '_id' and 'content' from the listing
@@ -72,6 +81,6 @@ class DataLakeHandler:
             categorized_listing = {**listing, **record}
             self.listings_categorized.insert_one(categorized_listing)
 
-            logger.info(f"Listing with url {url} categorized.")
+            logger.info(f"Listing with ID {uuid} categorized.")
         except (OperationFailure, ConnectionFailure, BulkWriteError) as e:
-            logger.error(f"Failed to insert categorization for {record['url']}. Error: {e}")
+            logger.error(f"Failed to insert categorization for {record['uuid']}. Error: {e}")

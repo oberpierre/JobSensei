@@ -1,0 +1,11 @@
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="error">An error ocurred!</div>
+<nb-card *ngIf="jobs">
+    <nb-list>
+        <ng-container *ngFor="let job of jobs" ngProjectAs="nb-list-item">
+            <a [routerLink]="['/job', job.uuid]">
+                <app-job-card [job]="job" />
+            </a>
+        </ng-container>
+    </nb-list>
+</nb-card>

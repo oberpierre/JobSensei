@@ -3,7 +3,7 @@ load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("@npm//web:history-server/package_json.bzl", history_server_bin = "bin")
+load("@npm//web:http-server/package_json.bzl", http_server_bin = "bin")
 load("@npm//web:html-insert-assets/package_json.bzl", html_insert_assets_bin = "bin")
 load("@npm//web:karma/package_json.bzl", _karma_bin = "bin")
 load("//web/tools:ng.bzl", "ng_esbuild", "ng_project")
@@ -210,9 +210,9 @@ def _pkg_web(name, entry_point, entry_deps, html_assets, assets, production, vis
     )
 
     # http server serving the bundle
-    history_server_bin.history_server_binary(
+    http_server_bin.http_server_binary(
         name = "serve" + ("-prod" if production else ""),
-        args = ["$(location :%s)" % name],
+        args = ["$(location :%s)" % name, "--proxy http://localhost:8080?"],
         data = [":%s" % name],
         visibility = visibility,
     )

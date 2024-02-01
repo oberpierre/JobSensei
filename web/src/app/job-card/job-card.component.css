@@ -1,0 +1,19 @@
+nb-list-item {
+    /* position needed for nb-badge positioning to work */
+    position: relative;
+    display: grid;
+    grid-template-areas:
+        "title"
+        "summary";
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    align-items: center;
+}
+
+.title {
+    grid-area: title;
+}
+
+.summary {
+    grid-area: summary;
+}
