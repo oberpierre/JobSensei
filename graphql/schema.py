@@ -32,6 +32,11 @@ class Job(ObjectType):
     created_on = String()
     deleted_on = String()
 
+def parse_date(candidate):
+    if isinstance(candidate, datetime):
+        return candidate.isoformat()
+    return candidate
+
 def map_job(dict):
     return Job(
         uuid=dict.get('uuid', None),
@@ -42,8 +47,8 @@ def map_job(dict):
         skills=dict.get('skills', None),
         responsibilities=dict.get('responsibilities', None),
         qualifications=dict.get('qualifications', None),
-        created_on=dict.get('createdOn', None),
-        deleted_on=dict.get('deletedOn', None),
+        created_on=parse_date(dict.get('createdOn', None)),
+        deleted_on=parse_date(dict.get('deletedOn', None)),
     )
 
 class Query(ObjectType):
