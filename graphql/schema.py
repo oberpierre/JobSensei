@@ -2,6 +2,8 @@ from graphene import Field, List, ObjectType, String, Schema
 from pymongo import MongoClient
 from decouple import config
 from urllib.parse import quote_plus
+from bson.codec_options import CodecOptions
+from datetime import datetime
 
 user = config('MONGO_USER', default='')
 password = config('MONGO_PASSWORD', default='')
@@ -56,13 +58,15 @@ class Query(ObjectType):
     job = Field(Job, uuid=String(required=True))
 
     def resolve_jobs(parent, info):
-        jobs = client.jobsensei.listings_categorized.find()
+        listings = client.jobsensei.listings_categorized.with_options(codec_options=CodecOptions(tz_aware=True))
+        jobs = listings.find()
         return [
             map_job(job) for job in jobs
         ]
     
     def resolve_job(parent, info, uuid):
-        job = client.jobsensei.listings_categorized.find_one({"uuid": uuid})
+        listings = client.jobsensei.listings_categorized.with_options(codec_options=CodecOptions(tz_aware=True))
+        job = listings.find_one({"uuid": uuid})
         if job:
             return map_job(job)
         return None
