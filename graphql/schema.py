@@ -1,9 +1,13 @@
-from graphene import Field, List, ObjectType, String, Schema
+from graphene import Boolean, Field, List, ObjectType, String, Schema
 from pymongo import MongoClient
 from decouple import config
 from urllib.parse import quote_plus
 from bson.codec_options import CodecOptions
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 user = config('MONGO_USER', default='')
 password = config('MONGO_PASSWORD', default='')
@@ -32,7 +36,17 @@ class Job(ObjectType):
     responsibilities = List(String)
     qualifications = Field(Qualifications)
     created_on = String()
+    is_recent = Boolean()
     deleted_on = String()
+
+    def resolve_is_recent(parent, info):
+        today = datetime.now(tz=timezone.utc)
+        try:
+            created_on = datetime.fromisoformat(parent.created_on)
+            return created_on > today - timedelta(days=7)
+        except Exception as e:
+            logger.error(f"Failed to resolve is_recent: {e}")
+        return False
 
 def parse_date(candidate):
     if isinstance(candidate, datetime):
