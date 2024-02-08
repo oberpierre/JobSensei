@@ -70,4 +70,18 @@ describe('JobCardComponent', () => {
     const badge = fixture.debugElement.query(By.directive(NbBadgeComponent));
     expect(badge?.nativeElement?.textContent).toBe('Recent');
   });
+
+  it('should display delisted badge on if deletedOn and isRecent are both truthy', () => {
+    component.job = {
+      uuid: '1',
+      title: 'Foobar',
+      deletedOn: '2024-01-21T16:44:44',
+      isRecent: true,
+    }
+
+    fixture.detectChanges();
+    const badge = fixture.debugElement.queryAll(By.directive(NbBadgeComponent));
+    expect(badge.length).toBe(1);
+    expect(badge?.[0]?.nativeElement?.textContent).toBe('Delisted');
+  });
 });
