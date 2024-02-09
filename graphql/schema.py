@@ -38,6 +38,7 @@ class Job(ObjectType):
     created_on = String()
     is_recent = Boolean()
     deleted_on = String()
+    is_deleted = Boolean()
 
     def resolve_is_recent(parent, info):
         today = datetime.now(tz=timezone.utc)
@@ -47,6 +48,9 @@ class Job(ObjectType):
         except Exception as e:
             logger.error(f"Failed to resolve is_recent: {e}")
         return False
+
+    def resolve_is_deleted(parent, info):
+        return parent.deleted_on != None
 
 def parse_date(candidate):
     if isinstance(candidate, datetime):

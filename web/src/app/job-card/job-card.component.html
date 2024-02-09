@@ -1,6 +1,6 @@
 <nb-list-item>
-    <nb-badge *ngIf="job?.deletedOn" text="Delisted" status="danger" position="top end" />
-    <nb-badge *ngIf="!job?.deletedOn && job?.isRecent" text="Recent" status="success" position="top end" />
+    <nb-badge *ngIf="job?.isDeleted" text="Delisted" status="danger" position="top end" />
+    <nb-badge *ngIf="!job?.isDeleted && job?.isRecent" text="Recent" status="success" position="top end" />
     <span class="title subtitle">{{job.title}}</span>
     <span class="summary label">{{job.summary}}</span>
 </nb-list-item>

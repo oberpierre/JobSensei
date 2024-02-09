@@ -51,7 +51,7 @@ describe('JobCardComponent', () => {
     component.job = {
       uuid: '1',
       title: 'Foobar',
-      deletedOn: '2024-01-21T16:44:44',
+      isDeleted: true,
     }
 
     fixture.detectChanges();
@@ -75,7 +75,7 @@ describe('JobCardComponent', () => {
     component.job = {
       uuid: '1',
       title: 'Foobar',
-      deletedOn: '2024-01-21T16:44:44',
+      isDeleted: true,
       isRecent: true,
     }
 

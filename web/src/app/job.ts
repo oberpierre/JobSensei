@@ -16,4 +16,5 @@ export interface Job {
     createdOn?: string;
     isRecent?: boolean;
     deletedOn?: string;
+    isDeleted?: boolean;
 }

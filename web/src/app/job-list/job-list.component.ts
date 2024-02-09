@@ -13,7 +13,7 @@ export const GET_JOBS = gql`
       title
       summary
       isRecent
-      deletedOn
+      isDeleted
     }
   }
 `;
