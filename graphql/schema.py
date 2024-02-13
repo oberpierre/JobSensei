@@ -18,6 +18,9 @@ conn_str = 'mongodb://%s:%s@%s/%s' % (quote_plus(user), quote_plus(password), qu
 
 client = MongoClient(conn_str)
 
+def get_listings_db():
+    return client.jobsensei.listings_categorized.with_options(codec_options=CodecOptions(tz_aware=True))
+
 class Location(ObjectType):
     city = String()
     country = String()
@@ -76,14 +79,14 @@ class Query(ObjectType):
     job = Field(Job, uuid=String(required=True))
 
     def resolve_jobs(parent, info):
-        listings = client.jobsensei.listings_categorized.with_options(codec_options=CodecOptions(tz_aware=True))
+        listings = get_listings_db()
         jobs = listings.find()
         return [
             map_job(job) for job in jobs
         ]
     
     def resolve_job(parent, info, uuid):
-        listings = client.jobsensei.listings_categorized.with_options(codec_options=CodecOptions(tz_aware=True))
+        listings = get_listings_db()
         job = listings.find_one({"uuid": uuid})
         if job:
             return map_job(job)
