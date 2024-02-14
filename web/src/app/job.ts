@@ -14,5 +14,7 @@ export interface Job {
         preferred?: string[];
     };
     createdOn?: string;
+    isRecent?: boolean;
     deletedOn?: string;
+    isDeleted?: boolean;
 }

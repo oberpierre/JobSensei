@@ -51,11 +51,37 @@ describe('JobCardComponent', () => {
     component.job = {
       uuid: '1',
       title: 'Foobar',
-      deletedOn: '2024-01-21T16:44:44',
+      isDeleted: true,
     }
 
     fixture.detectChanges();
     const badge = fixture.debugElement.query(By.directive(NbBadgeComponent));
     expect(badge?.nativeElement?.textContent).toBe('Delisted');
+  });
+
+  it('should display recent badge if isRecent is true', () => {
+    component.job = {
+      uuid: '1',
+      title: 'Foobar',
+      isRecent: true,
+    }
+
+    fixture.detectChanges();
+    const badge = fixture.debugElement.query(By.directive(NbBadgeComponent));
+    expect(badge?.nativeElement?.textContent).toBe('Recent');
+  });
+
+  it('should display delisted badge on if deletedOn and isRecent are both truthy', () => {
+    component.job = {
+      uuid: '1',
+      title: 'Foobar',
+      isDeleted: true,
+      isRecent: true,
+    }
+
+    fixture.detectChanges();
+    const badge = fixture.debugElement.queryAll(By.directive(NbBadgeComponent));
+    expect(badge.length).toBe(1);
+    expect(badge?.[0]?.nativeElement?.textContent).toBe('Delisted');
   });
 });
