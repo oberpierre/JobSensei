@@ -4,8 +4,9 @@ import { APOLLO_FLAGS, APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { InMemoryCache } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
 import { BrowserModule, provideProtractorTestingSupport } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter, RouterModule, RouterOutlet } from '@angular/router';
-import { NbLayoutModule, NbThemeModule } from '@nebular/theme';
+import { NbLayoutModule, NbThemeModule, NbToggleModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 
 import { AppComponent } from './app.component';
@@ -21,9 +22,11 @@ import { routes } from './app.routes';
     ApolloModule,
     HttpClientModule,
     RouterOutlet,
+    BrowserAnimationsModule,
     BrowserModule,
     RouterModule.forRoot(routes),
     NbThemeModule.forRoot({ name: 'dark'}),
+    NbToggleModule,
     NbLayoutModule,
     NbEvaIconsModule,
     NotFoundComponent,
