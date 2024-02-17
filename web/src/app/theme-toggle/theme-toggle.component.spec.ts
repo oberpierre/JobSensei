@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ThemeToggleComponent } from './theme-toggle.component';
-import { NbLayoutDirectionService, NbStatusService } from '@nebular/theme';
+import { NbLayoutDirectionService, NbStatusService, NbThemeService } from '@nebular/theme';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -13,6 +13,9 @@ class MockNbLayoutDirectionService {
 class MockNbStatusService {
   isCustomStatus = () => false;
 }
+class MockNbThemeService {
+  changeTheme = () => {};
+}
 
 describe('ThemeToggleComponent', () => {
   let component: ThemeToggleComponent;
@@ -24,6 +27,7 @@ describe('ThemeToggleComponent', () => {
       providers: [
         {provide: NbLayoutDirectionService, useClass: MockNbLayoutDirectionService},
         {provide: NbStatusService, useClass: MockNbStatusService},
+        {provide: NbThemeService, useClass: MockNbThemeService},
       ]
     })
     .compileComponents();
