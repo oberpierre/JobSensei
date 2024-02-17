@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbToggleModule } from '@nebular/theme';
+import { NbThemeService, NbToggleModule } from '@nebular/theme';
 
 @Component({
   selector: 'app-theme-toggle',
@@ -10,4 +10,10 @@ import { NbToggleModule } from '@nebular/theme';
   styleUrl: './theme-toggle.component.css'
 })
 export class ThemeToggleComponent {
+
+  constructor(private themeService: NbThemeService) {}
+
+  themeChange(isLightTheme: boolean) {
+    this.themeService.changeTheme(isLightTheme ? 'default' : 'dark');
+  }
 }

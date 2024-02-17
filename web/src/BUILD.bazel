@@ -23,10 +23,22 @@ directory_path(
     path = "styles/prebuilt/dark.css",
 )
 
+directory_path(
+    name = "nebular-default-theme-path",
+    directory = "//web:node_modules/@nebular/theme/dir",
+    path = "styles/prebuilt/default.css",
+)
+
 copy_file(
     name = "nebular-theme",
     src = ":nebular-theme-path",
-    out = "nebular.css",
+    out = "dark.css",
+)
+
+copy_file(
+    name = "nebular-default-theme",
+    src = ":nebular-default-theme-path",
+    out = "default.css",
 )
 
 # The Angular demo application
@@ -46,7 +58,8 @@ ng_application(
     ],
     html_assets = [
         ":normalize.css",
-        ":nebular.css",
+        ":dark.css",
+        ":default.css",
         "styles.css",
         "favicon.ico"
     ]
