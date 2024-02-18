@@ -33,26 +33,47 @@ describe('ThemeToggleComponent', () => {
     
     fixture = TestBed.createComponent(ThemeToggleComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create theme toggle', () => {
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 
   it('should change the theme upon toggling', async () => {
+    spyOn(component, 'getThemeSetting').and.returnValue(false);
+    fixture.detectChanges();
     const toggle = fixture.nativeElement.querySelector('input');
     
     expect(toggle?.checked).toBe(false);
+    expect(component.checked).toBe(false);
+    expect(nbThemeServiceSpy.changeTheme).toHaveBeenCalledTimes(1);
+    expect(nbThemeServiceSpy.changeTheme.calls.argsFor(0)).toEqual(['dark']);
 
     toggle?.click();
     expect(toggle?.checked).toBe(true);
-    expect(nbThemeServiceSpy.changeTheme).toHaveBeenCalledTimes(1);
-    expect(nbThemeServiceSpy.changeTheme.calls.argsFor(0)).toEqual(['default']);
+    expect(component.checked).toBe(true);
+    expect(nbThemeServiceSpy.changeTheme).toHaveBeenCalledTimes(2);
+    expect(nbThemeServiceSpy.changeTheme.calls.argsFor(1)).toEqual(['default']);
 
     toggle?.click();
     expect(toggle?.checked).toBe(false);
-    expect(nbThemeServiceSpy.changeTheme).toHaveBeenCalledTimes(2);
-    expect(nbThemeServiceSpy.changeTheme.calls.argsFor(1)).toEqual(['dark']);
+    expect(component.checked).toBe(false);
+    expect(nbThemeServiceSpy.changeTheme).toHaveBeenCalledTimes(3);
+    expect(nbThemeServiceSpy.changeTheme.calls.argsFor(2)).toEqual(['dark']);
+  });
+
+  [{theme: 'light', value: true}, {theme: 'dark', value: false}].forEach(({theme, value}) => {
+    it(`should initialize toggle with ${value} for system theme ${theme}`, () => {
+      spyOn(window, 'matchMedia').withArgs('(prefers-color-scheme: light)').and.returnValue({matches: value} as MediaQueryList);
+      fixture.detectChanges();
+
+      const toggle = fixture.nativeElement.querySelector('input');
+
+      expect(toggle?.checked).toBe(value);
+      expect(nbThemeServiceSpy.changeTheme).toHaveBeenCalledTimes(1);
+      expect(nbThemeServiceSpy.changeTheme.calls.argsFor(0)).toEqual([theme === 'light' ? 'default' : theme]);
+    })
   })
 });

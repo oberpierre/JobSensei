@@ -10,8 +10,22 @@ import { NbThemeService, NbToggleModule } from '@nebular/theme';
   styleUrl: './theme-toggle.component.css'
 })
 export class ThemeToggleComponent {
+  checked: boolean = false;
 
   constructor(private themeService: NbThemeService) {}
+
+  
+  ngOnInit(): void {
+    this.checked = this.getThemeSetting();
+    this.themeChange(this.checked);
+  }
+
+  getThemeSetting(): boolean {
+    if (window.matchMedia?.('(prefers-color-scheme: light)')?.matches) {
+      return true;
+    }
+    return false;
+  }
 
   themeChange(isLightTheme: boolean) {
     this.themeService.changeTheme(isLightTheme ? 'default' : 'dark');
