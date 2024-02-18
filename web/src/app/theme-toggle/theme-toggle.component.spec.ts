@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ThemeToggleComponent, THEME_KEY } from './theme-toggle.component';
 import { NbLayoutDirectionService, NbStatusService, NbThemeService, NbToggleComponent } from '@nebular/theme';
+import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -23,7 +24,7 @@ describe('ThemeToggleComponent', () => {
     localStorage.clear();
     nbThemeServiceSpy = jasmine.createSpyObj(NbThemeService, ['changeTheme']);
     await TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule, ThemeToggleComponent],
+      imports: [NoopAnimationsModule, NbEvaIconsModule, ThemeToggleComponent],
       providers: [
         {provide: NbLayoutDirectionService, useClass: MockNbLayoutDirectionService},
         {provide: NbStatusService, useClass: MockNbStatusService},

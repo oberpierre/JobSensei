@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbThemeService, NbToggleModule } from '@nebular/theme';
+import { NbThemeService, NbIconModule, NbToggleModule } from '@nebular/theme';
 
 export const THEME_KEY = 'theme';
 export enum THEME {
@@ -11,7 +11,7 @@ export enum THEME {
 @Component({
   selector: 'app-theme-toggle',
   standalone: true,
-  imports: [CommonModule, NbToggleModule],
+  imports: [CommonModule, NbIconModule, NbToggleModule],
   templateUrl: './theme-toggle.component.html',
   styleUrl: './theme-toggle.component.css'
 })
