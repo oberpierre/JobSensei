@@ -4,6 +4,7 @@ import { APOLLO_FLAGS, APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { InMemoryCache } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
 import { BrowserModule, provideProtractorTestingSupport } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter, RouterModule, RouterOutlet } from '@angular/router';
 import { NbLayoutModule, NbThemeModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
@@ -11,6 +12,7 @@ import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { AppComponent } from './app.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { JobListComponent } from './job-list/job-list.component';
+import { ThemeToggleComponent } from './theme-toggle/theme-toggle.component';
 import { routes } from './app.routes';
 
 @NgModule({
@@ -22,12 +24,14 @@ import { routes } from './app.routes';
     HttpClientModule,
     RouterOutlet,
     BrowserModule,
+    BrowserAnimationsModule,
     RouterModule.forRoot(routes),
     NbThemeModule.forRoot({ name: 'dark'}),
     NbLayoutModule,
     NbEvaIconsModule,
     NotFoundComponent,
     JobListComponent,
+    ThemeToggleComponent,
   ],
   providers: [
     {

@@ -1,0 +1,4 @@
+<nb-toggle status="basic" (checkedChange)="themeChange($event, true)" [(checked)]="checked" labelPosition="start">
+    <nb-icon *ngIf="!checked" icon="sun" />
+    <nb-icon *ngIf="checked" icon="moon" />
+</nb-toggle>
