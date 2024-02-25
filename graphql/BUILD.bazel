@@ -1,4 +1,7 @@
+load("@aspect_bazel_lib//lib:transitions.bzl", "platform_transition_filegroup")
 load("@pip_deps//:requirements.bzl", "requirement")
+load("@rules_oci//oci:defs.bzl", "oci_tarball")
+load("//:py_layer.bzl", "py_oci_image")
 
 py_binary(
     name = "graphql",
@@ -13,4 +16,44 @@ py_binary(
         requirement("pymongo"),
         requirement("python-decouple"),
     ],
+)
+
+py_oci_image(
+    name = "graphql_image",
+    base = "@distroless_python",
+    binary = "graphql",
+    # FIXME: the generated shebang points to /usr/bin/env which does not exist in our distroless base, therefore we specify the interpreter in the entrypoint
+    # in the future this should be handled by specifying a py_runtime appropriately, see: https://bazel.build/reference/be/python#py_runtime
+    entrypoint = ["python3", "/graphql/graphql"],
+)
+
+platform(
+    name = "aarch64_linux",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+    ],
+)
+
+platform(
+    name = "x86_64_linux",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+platform_transition_filegroup(
+    name = "graphql_platform_image",
+    srcs = [":graphql_image"],
+    target_platform = select({
+        "@platforms//cpu:arm64": ":aarch64_linux",
+        "@platforms//cpu:x86_64": ":x86_64_linux",
+    }),
+)
+
+oci_tarball(
+    name = "tarball",
+    image = ":graphql_platform_image",
+    repo_tags = ["jobsensei_graphql:latest"],
 )
