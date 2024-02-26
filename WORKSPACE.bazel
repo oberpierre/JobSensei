@@ -181,6 +181,16 @@ oci_register_toolchains(
 load("@rules_oci//oci:pull.bzl", "oci_pull")
 
 oci_pull(
+    name = "nginx",
+    image = "nginx",
+    digest = "sha256:6a2f8b28e45c4adea04ec207a251fd4a2df03ddc930f782af51e315ebc76e9a9",
+    platforms = [
+        "linux/amd64",
+        "linux/arm64",
+    ],
+)
+
+oci_pull(
     name = "distroless_python",
     image = "gcr.io/distroless/python3",
     tag = "debug",
@@ -189,3 +199,13 @@ oci_pull(
         "linux/arm64",
     ],
 )
+
+http_archive(
+    name = "rules_pkg",
+    urls = [
+        "https://github.com/bazelbuild/rules_pkg/releases/download/0.10.1/rules_pkg-0.10.1.tar.gz",
+    ],
+    sha256 = "d250924a2ecc5176808fc4c25d5cf5e9e79e6346d79d5ab1c493e289e722d1d0",
+)
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+rules_pkg_dependencies()
