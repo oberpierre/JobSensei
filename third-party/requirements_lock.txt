@@ -656,6 +656,10 @@ w3lib==2.1.2 \
     #   itemloaders
     #   parsel
     #   scrapy
+waitress==3.0.0 \
+    --hash=sha256:005da479b04134cdd9dd602d1ee7c49d79de0537610d653674cc6cbde222b8a1 \
+    --hash=sha256:2a06f242f4ba0cc563444ca3d1998959447477363a2d7e9b8b4d75d35cfd1669
+    # via -r third-party/requirements.in
 werkzeug==3.0.1 \
     --hash=sha256:507e811ecea72b18a404947aded4b3390e1db8f826b494d76550ef45bb3b1dcc \
     --hash=sha256:90a285dc0e42ad56b34e696398b8122ee4c681833fb35b8334a095d82c56da10
