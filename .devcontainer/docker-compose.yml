@@ -57,7 +57,7 @@ services:
     restart: unless-stopped
     volumes:
       - mongodb-data:/data/db
-      - ./mongo-entrypoint:/docker-entrypoint-initdb.d:ro
+      - ../.build/mongo-entrypoint:/docker-entrypoint-initdb.d:ro
 
     # Uncomment to change startup options
     environment:
